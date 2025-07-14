@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../utils/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import CoachTable from '../components/CoachTable';
+import CoachDetailsModal from '../components/CoachDetailsModal';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import Pagination from '../components/Pagination.jsx';
 
 export default function Coaches() {
@@ -11,57 +14,76 @@ export default function Coaches() {
   const [pagination, setPagination] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [page, setPage] = useState(1);
 
-  useEffect(() => {
-    const fetchCoaches = async () => {
-      setLoading(true);
-      setError('');
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/coaches?page=${page}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+  const [selectedCoach, setSelectedCoach] = useState(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
-        if (!res.ok) {
-          throw new Error('Error al obtener los coaches');
-        }
+  const [coachToDelete, setCoachToDelete] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-        const data = await res.json();
-
-        setCoaches(data.data.data);
-        setPagination(data.data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCoaches();
-  }, [token, page]);
-
-  const handleDelete = async (coachId) => {
-    if (!window.confirm('¿Estás seguro de que quieres eliminar este coach?')) return;
-
+  // fetch coaches con paginacion y token
+  const fetchCoaches = async (page = 1) => {
+    setLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/coaches/${coachId}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/coaches?page=${page}`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!res.ok) {
-        throw new Error('Error al eliminar el coach');
-      }
+      if (!res.ok) throw new Error('Error al obtener los coaches');
 
-      // Recarga la página actual (en lugar de filtrar en cliente)
-      setPage(1);  // o setPage(page) para recargar misma página, o hacer un fetch extra
+      const data = await res.json();
+      setCoaches(data.data.data);
+      setPagination(data.data);
+      setError('');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (token) fetchCoaches();
+  }, [token]);
+
+  const handleViewDetails = (coach) => {
+    setSelectedCoach(coach);
+    setShowDetailsModal(true);
+  };
+
+  const handleCloseDetails = () => {
+    setSelectedCoach(null);
+    setShowDetailsModal(false);
+  };
+
+  const handleRequestDelete = (coach) => {
+    setCoachToDelete(coach);
+    setShowDeleteModal(true);
+  };
+
+  const handleCancelDelete = () => {
+    setCoachToDelete(null);
+    setShowDeleteModal(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/coaches/${coachToDelete.id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Error al eliminar el coach');
+
+      setCoaches(coaches.filter(c => c.id !== coachToDelete.id));
+      setShowDeleteModal(false);
+      setCoachToDelete(null);
     } catch (err) {
       alert(err.message);
     }
+  };
+
+  const handlePageChange = (newPage) => {
+    fetchCoaches(newPage);
   };
 
   if (loading) return <p>Cargando coaches...</p>;
@@ -70,43 +92,30 @@ export default function Coaches() {
   return (
     <div>
       <h2>Listado de Coaches</h2>
-      <table border="1" cellPadding="8" style={{ borderCollapse: 'collapse', width: '100%' }}>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Email</th>
-            <th>Creado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {coaches.map(coach => {
-            const createdDate = new Date(coach.created_at).toLocaleDateString();
-            return (
-              <tr key={coach.id}>
-                <td>{coach.id}</td>
-                <td>{coach.name}</td>
-                <td>{coach.email}</td>
-                <td>{createdDate}</td>
-                <td>
-                  <button
-                    onClick={() => navigate(`/coaches/${coach.id}`)}
-                    style={{ marginRight: '10px' }}
-                  >
-                    Ver detalles
-                  </button>
-                  <button onClick={() => handleDelete(coach.id)}>
-                    Eliminar
-                  </button>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
 
-      <Pagination pagination={pagination} onPageChange={setPage} />
+      <CoachTable
+        coaches={coaches}
+        onViewDetails={handleViewDetails}
+        onDelete={handleRequestDelete}
+      />
+
+        {pagination && (
+        <Pagination
+            pagination={pagination}
+            onPageChange={handlePageChange}
+        />
+        )}
+      {showDetailsModal && selectedCoach && (
+        <CoachDetailsModal coach={selectedCoach} onClose={handleCloseDetails} />
+      )}
+
+      {showDeleteModal && coachToDelete && (
+        <ConfirmDeleteModal
+          coach={coachToDelete}
+          onCancel={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
+        />
+      )}
     </div>
   );
 }
