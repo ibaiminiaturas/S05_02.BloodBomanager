@@ -17,11 +17,12 @@ export default function Coaches() {
 
   const [selectedCoach, setSelectedCoach] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [detailsLoading, setDetailsLoading] = useState(false);
 
   const [coachToDelete, setCoachToDelete] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  // fetch coaches con paginacion y token
+  // fetch listado de coaches
   const fetchCoaches = async (page = 1) => {
     setLoading(true);
     try {
@@ -46,9 +47,27 @@ export default function Coaches() {
     if (token) fetchCoaches();
   }, [token]);
 
+  // fetch de detalles de un coach individual
+  const fetchCoachDetails = async (coachId) => {
+    setDetailsLoading(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/coaches/${coachId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) throw new Error('Error al obtener detalles del coach');
+      const data = await res.json();
+      setSelectedCoach(data.data);
+      setShowDetailsModal(true);
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setDetailsLoading(false);
+    }
+  };
+
   const handleViewDetails = (coach) => {
-    setSelectedCoach(coach);
-    setShowDetailsModal(true);
+    fetchCoachDetails(coach.id);
   };
 
   const handleCloseDetails = () => {
@@ -70,7 +89,8 @@ export default function Coaches() {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/coaches/${coachToDelete.id}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}`
+        }, 
       });
       if (!res.ok) throw new Error('Error al eliminar el coach');
 
@@ -99,15 +119,21 @@ export default function Coaches() {
         onDelete={handleRequestDelete}
       />
 
-        {pagination && (
+      {pagination && (
         <Pagination
-            pagination={pagination}
-            onPageChange={handlePageChange}
+          pagination={pagination}
+          onPageChange={handlePageChange}
         />
-        )}
-      {showDetailsModal && selectedCoach && (
-        <CoachDetailsModal coach={selectedCoach} onClose={handleCloseDetails} />
       )}
+
+      {showDetailsModal && selectedCoach && (
+        <CoachDetailsModal
+          coach={selectedCoach}
+          onClose={handleCloseDetails}
+        />
+      )}
+
+      {detailsLoading && <p>Cargando detalles del coach...</p>}
 
       {showDeleteModal && coachToDelete && (
         <ConfirmDeleteModal
