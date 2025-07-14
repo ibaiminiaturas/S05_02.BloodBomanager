@@ -10,7 +10,6 @@ export const AuthProvider = ({ children }) => {
   const fetchUser = async (token) => {
     setLoading(true);
     try {
-      console.log('Token que se envía:', token);  // <-- aquí el log
       const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
