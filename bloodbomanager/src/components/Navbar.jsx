@@ -1,7 +1,8 @@
 // src/components/Navbar.jsx
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext.jsx';
+import HoverDropdownMenu from './HoverDropdownMenu.jsx';
+
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -18,6 +19,8 @@ const Navbar = () => {
         <>
           {' | '}
           <Link to="/coaches">Coaches</Link>
+
+
         </>
       )}
 
