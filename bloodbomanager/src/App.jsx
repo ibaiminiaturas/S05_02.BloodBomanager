@@ -1,12 +1,18 @@
-import React from 'react';
-import StatusChecker from './components/StatusChecker';
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import Status from "./pages/Status";
+import Navbar from "./components/Navbar";
 
 function App() {
   return (
-    <div className="min-h-screen bg-white p-6">
-      <h1 className="text-3xl font-bold mb-4">Blood Bowl Frontend</h1>
-      <StatusChecker />
-    </div>
+    <>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/status" element={<Status />} />
+      </Routes>
+    </>
   );
 }
 
