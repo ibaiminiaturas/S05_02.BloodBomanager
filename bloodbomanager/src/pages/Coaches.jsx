@@ -5,7 +5,7 @@ import CoachTable from '../components/CoachTable';
 import CoachDetailsModal from '../components/CoachDetailsModal';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import Pagination from '../components/Pagination.jsx';
-
+import MySwal from '../utils/MySwal.js';
 
 export default function Coaches() {
   const { token } = useAuth();
