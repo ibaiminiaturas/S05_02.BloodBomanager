@@ -9,25 +9,31 @@ import Login from './pages/Login';
 
 import { useAuth } from './utils/AuthContext';
 
+import Register from './pages/Register';  // importa el componente Register
+
 export default function App() {
   const { user, loading } = useAuth();
 
   if (loading) return <p>Cargando...</p>;
 
-  // Si no hay usuario, mostramos el login
   if (!user) {
-    return <Login />;
+    return (
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        {/* Redirigir a /login para cualquier otra ruta */}
+        <Route path="*" element={<Login />} />
+      </Routes>
+    );
   }
 
   return (
     <AppLayout>
       <Routes>
         <Route path="/" element={<Dashboard />} />
-        {/* Solo admin puede acceder a /coaches */}
         {user.roles.some(r => r.name === 'admin') && (
           <Route path="/coaches" element={<Coaches />} />
         )}
-        {/* Aquí puedes agregar más rutas */}
       </Routes>
     </AppLayout>
   );

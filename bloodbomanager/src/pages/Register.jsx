@@ -41,7 +41,7 @@ function Register() {
       }
 
       // Aquí usamos el login del context para guardar token y usuario
-      login(data.token, data.user);
+      login(data.access_token, data.user);
       navigate("/dashboard");
 
     } catch (err) {
