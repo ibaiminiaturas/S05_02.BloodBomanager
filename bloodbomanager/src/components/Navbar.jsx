@@ -12,7 +12,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav style={{ padding: '1rem', borderBottom: '1px solid #ccc' }}>
+    <nav className="navbar">
       <Link to="/">Dashboard</Link>
 
       {hasRole('admin') && (

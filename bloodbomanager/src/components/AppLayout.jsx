@@ -6,7 +6,7 @@ export default function AppLayout({ children }) {
   return (
     <div>
       <Navbar />
-      <main style={{ padding: '1rem' }}>
+      <main className="main-content">
         {children}
       </main>
     </div>

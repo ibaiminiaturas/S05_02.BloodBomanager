@@ -4,14 +4,13 @@ export default function CoachDetailsModal({ coach, onClose }) {
   if (!coach) return null;
 
   return (
-    <div style={modalStyles.overlay}>
-      <div style={modalStyles.modal}>
+    <div className="modal-overlay">
+      <div className="modal-container">
         <h2>Detalles del Coach</h2>
         <p><strong>Nombre:</strong> {coach.name}</p>
         <p><strong>Email:</strong> {coach.email}</p>
         <p><strong>Creado:</strong> {new Date(coach.created_at).toLocaleString()}</p>
 
-        {/* Mostrar equipos si hay */}
         <div style={{ marginTop: '1rem' }}>
           <h3>Equipos</h3>
           {coach.teams && coach.teams.length > 0 ? (

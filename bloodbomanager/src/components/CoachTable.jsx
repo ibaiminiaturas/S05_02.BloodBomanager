@@ -5,7 +5,7 @@ export default function CoachTable({ coaches, onViewDetails, onDelete }) {
   const navigate = useNavigate();
 
   return (
-    <table border="1" cellPadding="8" style={{ borderCollapse: 'collapse', width: '100%' }}>
+    <table>
       <thead>
         <tr>
           <th>ID</th>

@@ -1,68 +1,179 @@
+/* Importar la fuente Roboto desde Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+  --color-primary: #a3bffa;
+  /* azul pastel */
+  --color-secondary: #f7a399;
+  /* coral pastel */
+  --color-background: #f5f7ff;
+  --color-text: #000000;
+  --color-error: #e53e3e;
+  --color-border: #ddd;
+  --color-error-bg: #f8d7da;
+  --color-error-border: #f5c6cb;
+  --color-success-bg: #d1e7dd;
+  --color-success-border: #badbcc;
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  line-height: 1.6;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
+/* Botones */
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+  color: var(--color-text);
+  background-color: var(--color-primary);
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+button:hover {
+  background-color: #839be6;
+}
+
+/* Links */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Encabezados */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--color-text);
+  margin-top: 1.5rem;
+}
+
+/* Tablas */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+table,
+th,
+td {
+  border: 1px solid var(--color-border);
+}
+
+th,
+td {
+  padding: 0.6rem;
+  text-align: left;
+}
+
+th {
+  background-color: var(--color-primary);
+  color: var(--color-text);
+}
+
+/* Formularios */
+input,
+select,
+textarea {
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 1rem;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Error */
+.error-message {
+  color: var(--color-error);
+  background-color: var(--color-error-bg);
+  border: 1px solid var(--color-error-border);
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+}
+
+/* Success */
+.success-message {
+  color: #0f5132;
+  background-color: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+}
+
+/* Modales */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Pagination */
+nav[aria-label="Pagination Navigation"] ul {
+  display: flex;
+  list-style: none;
+  gap: 8px;
+  padding: 0;
+  margin-top: 1rem;
+}
+
+nav[aria-label="Pagination Navigation"] button {
+  background-color: var(--color-secondary);
+  color: var(--color-text);
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+nav[aria-label="Pagination Navigation"] button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.navbar {
+  padding: 1rem;
+  border-bottom: 1px solid var(--color-border);
+  background-color: white;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.main-content {
+  padding: 1rem;
 }
