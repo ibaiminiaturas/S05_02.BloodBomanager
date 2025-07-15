@@ -5,7 +5,6 @@ import CoachTable from '../components/CoachTable';
 import CoachDetailsModal from '../components/CoachDetailsModal';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import Pagination from '../components/Pagination.jsx';
-import SuccessModal from '../components/SuccessModal';
 import Swal from 'sweetalert2';
 
 export default function Coaches() {
