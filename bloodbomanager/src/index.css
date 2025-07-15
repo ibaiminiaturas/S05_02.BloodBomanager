@@ -175,8 +175,8 @@ nav[aria-label="Pagination Navigation"] button[disabled] {
   background-color: white;
   border-bottom: 1px solid var(--color-border);
   box-sizing: border-box;
+  position: relative;
 }
-
 
 .nav-links-wrapper {
   flex: 1;
@@ -186,20 +186,26 @@ nav[aria-label="Pagination Navigation"] button[disabled] {
   align-items: flex-end;
   /* pestañas pegadas abajo */
   height: 100%;
-  padding-bottom: 0;
-  /* quitar espacio inferior */
   margin-right: 20px;
   /* espacio entre pestañas y logout */
+  padding-bottom: 0;
+  /* quitar cualquier padding */
+  justify-content: center;
+  /* centrar las pestañas */
+  position: relative;
 }
 
 .nav-links {
+  position: relative;
   display: flex;
   list-style: none;
-  margin: 0;
+  margin: 0 auto;
+  /* para centrar */
   padding: 0;
   gap: 0.5rem;
   align-items: flex-end;
-  /* pestañas pegadas abajo */
+  max-width: fit-content;
+  /* Ajustar al contenido */
 }
 
 .nav-links li {
@@ -236,20 +242,23 @@ nav[aria-label="Pagination Navigation"] button[disabled] {
   box-shadow: 0 -3px 6px rgba(0, 0, 0, 0.08);
 }
 
-
 .logout-wrapper {
   display: flex;
   align-items: center;
-  /* Centra verticalmente el botón dentro de este div */
+  margin-right: 20px;
 }
 
 .logout-button {
   /* Mantén aquí tus estilos previos, solo asegúrate que no tenga margin o padding extra que lo desbalancee */
   height: 36px;
   /* O la altura que uses */
-  padding: 0 1rem;
-  cursor: pointer;
+  padding: 0.5rem 2rem;
+  /* Más ancho horizontal, vertical igual */
+  font-size: 1rem;
+  /* Aseguramos tamaño de fuente igual a las pestañas */
   border-radius: 20px;
+  /* Mantén el borde redondeado */
+  cursor: pointer;
   background-color: var(--color-primary);
   color: var(--color-text);
   border: none;

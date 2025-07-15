@@ -8,6 +8,7 @@ import Pagination from '../components/Pagination.jsx';
 import SuccessModal from '../components/SuccessModal';
 
 export default function Coaches() {
+  console.log('Coaches loaded');
   const { token } = useAuth();
   const navigate = useNavigate();
 
