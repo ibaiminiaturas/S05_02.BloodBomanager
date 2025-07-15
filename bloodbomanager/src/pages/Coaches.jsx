@@ -5,7 +5,7 @@ import CoachTable from '../components/CoachTable';
 import CoachDetailsModal from '../components/CoachDetailsModal';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import Pagination from '../components/Pagination.jsx';
-import Swal from 'sweetalert2';
+
 
 export default function Coaches() {
   const { token } = useAuth();
@@ -100,7 +100,7 @@ export default function Coaches() {
       setShowDeleteModal(false);
       setCoachToDelete(null);
     // NUEVO: alerta SweetAlert de éxito
-    Swal.fire({
+    MySwal.fire({
       icon: 'success',
       title: 'Eliminado',
       text: `Entrenador ${coachToDelete.name} eliminado correctamente`,

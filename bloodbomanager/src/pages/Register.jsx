@@ -1,8 +1,11 @@
-import { useState } from "react";
-import { useAuth } from "../utils/AuthContext";
-import { useNavigate } from "react-router-dom";
-import Swal from 'sweetalert2';
-function Register() {
+// src/pages/Register.jsx
+import React, { useState } from 'react';
+import { useAuth } from '../utils/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import MySwal from '../utils/MySwal.js';
+import RegisterForm from '../components/RegisterForm.jsx';
+
+export default function Register() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -36,51 +39,41 @@ function Register() {
       const data = await res.json();
 
       if (!res.ok) {
-                    Swal.fire({
-                icon: 'error',
-                title: 'Error de login',
-                text: data.message || 'Credenciales incorrectas',
-                  position: 'top',
-              });
-        //setErrors(data.errors || { general: data.message });
+        MySwal.fire({
+          icon: 'error',
+          title: 'Error en el registro',
+          text: data.message || 'Credenciales incorrectas',
+          position: 'top',
+        });
         return;
       }
 
-      // Aquí usamos el login del context para guardar token y usuario
       login(data.access_token, data.user);
-      navigate("/dashboard");
+      MySwal.fire({
+        icon: 'success',
+        title: 'Registro exitoso',
+        timer: 2000,
+        showConfirmButton: false,
+        position: 'top',
+      });
+      navigate("/");
 
     } catch (err) {
-      console.error(err);
-Swal.fire({
-      icon: 'error',
-      title: 'Error de conexión',
-      text: 'No se pudo conectar con el servidor',
+      MySwal.fire({
+        icon: 'error',
+        title: 'Error de conexión',
+        text: 'No se pudo conectar con el servidor',
         position: 'top',
-    });
+      });
     }
   };
 
   return (
-    <div>
-      <h2>Registro</h2>
-      <form onSubmit={handleSubmit}>
-        <input name="name" placeholder="Nombre" value={formData.name} onChange={handleChange} />
-        <input name="email" placeholder="Email" value={formData.email} onChange={handleChange} />
-        <input name="password" type="password" placeholder="Contraseña" value={formData.password} onChange={handleChange} />
-        <input name="password_confirmation" type="password" placeholder="Confirmar contraseña" value={formData.password_confirmation} onChange={handleChange} />
-        <button type="submit">Registrarse</button>
-      </form>
-
-      {errors && (
-        <div>
-          {Object.entries(errors).map(([field, msg]) => (
-            <p key={field} style={{ color: "red" }}>{msg}</p>
-          ))}
-        </div>
-      )}
-    </div>
+    <RegisterForm
+      formData={formData}
+      handleChange={handleChange}
+      handleSubmit={handleSubmit}
+      errors={errors}
+    />
   );
 }
-
-export default Register;
