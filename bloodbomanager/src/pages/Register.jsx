@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../utils/AuthContext";
 import { useNavigate } from "react-router-dom";
-
+import Swal from 'sweetalert2';
 function Register() {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -36,7 +36,13 @@ function Register() {
       const data = await res.json();
 
       if (!res.ok) {
-        setErrors(data.errors || { general: data.message });
+                    Swal.fire({
+                icon: 'error',
+                title: 'Error de login',
+                text: data.message || 'Credenciales incorrectas',
+                  position: 'top',
+              });
+        //setErrors(data.errors || { general: data.message });
         return;
       }
 
@@ -46,7 +52,12 @@ function Register() {
 
     } catch (err) {
       console.error(err);
-      setErrors({ general: "Error de red" });
+Swal.fire({
+      icon: 'error',
+      title: 'Error de conexión',
+      text: 'No se pudo conectar con el servidor',
+        position: 'top',
+    });
     }
   };
 

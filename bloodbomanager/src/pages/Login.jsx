@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { AuthContext } from '../utils/AuthContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 export default function Login() {
   const { login } = useContext(AuthContext);
@@ -27,17 +28,41 @@ export default function Login() {
         console.log(data)
         if (res.ok) {
             const token = data.access_token;  // <-- aquí está el token esperado
+
             if (token) {
+              Swal.fire({
+          icon: 'success',
+          title: '¡Login exitoso!',
+          timer: 2000,
+          showConfirmButton: false,
+            position: 'top',
+        });
                 await login(token);
                 navigate('/dashboard');
             } else {
-                setError('No se recibió token del servidor');
+                 Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se recibió token del servidor',
+            position: 'top',
+        });
             }
             } else {
-            setError(data.message || 'Error en login');
+            Swal.fire({
+        icon: 'error',
+        title: 'Error de login',
+        text: data.message || 'Credenciales incorrectas',
+          position: 'top',
+      });
             }
         } catch {
-           console.error(error); setError('Error de conexión');
+           console.error(error);  
+           Swal.fire({
+      icon: 'error',
+      title: 'Error de conexión',
+      text: 'No se pudo conectar con el servidor',
+        position: 'top',
+    });
         }
   };
 

@@ -6,6 +6,7 @@ import CoachDetailsModal from '../components/CoachDetailsModal';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import Pagination from '../components/Pagination.jsx';
 import SuccessModal from '../components/SuccessModal';
+import Swal from 'sweetalert2';
 
 export default function Coaches() {
   const { token } = useAuth();
@@ -23,9 +24,7 @@ export default function Coaches() {
   const [coachToDelete, setCoachToDelete] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  // Estados para el modal de éxito
-  const [successMessage, setSuccessMessage] = useState('');
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
 
   // fetch listado de coaches
   const fetchCoaches = async (page = 1) => {
@@ -101,8 +100,17 @@ export default function Coaches() {
       setCoaches(coaches.filter(c => c.id !== coachToDelete.id));
       setShowDeleteModal(false);
       setCoachToDelete(null);
-      setSuccessMessage(`Entrenador ${coachToDelete.name} eliminado correctamente`);
-      setShowSuccessModal(true);
+    // NUEVO: alerta SweetAlert de éxito
+    Swal.fire({
+      icon: 'success',
+      title: 'Eliminado',
+      text: `Entrenador ${coachToDelete.name} eliminado correctamente`,
+      position: 'top',
+      timer: 2000,
+      showConfirmButton: false,
+     // toast: true,
+      timerProgressBar : true,
+    });
     } catch (err) {
       alert(err.message);
     }
@@ -154,12 +162,7 @@ export default function Coaches() {
         />
       )}
 
-      {showSuccessModal && (
-        <SuccessModal
-          message={successMessage}
-          onClose={handleCloseSuccessModal}
-        />
-      )}
+
     </div>
   );
 }
