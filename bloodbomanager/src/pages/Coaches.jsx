@@ -5,6 +5,7 @@ import CoachTable from '../components/CoachTable';
 import CoachDetailsModal from '../components/CoachDetailsModal';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import Pagination from '../components/Pagination.jsx';
+import SuccessModal from '../components/SuccessModal';
 
 export default function Coaches() {
   const { token } = useAuth();
@@ -21,6 +22,10 @@ export default function Coaches() {
 
   const [coachToDelete, setCoachToDelete] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  // Estados para el modal de éxito
+  const [successMessage, setSuccessMessage] = useState('');
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   // fetch listado de coaches
   const fetchCoaches = async (page = 1) => {
@@ -89,14 +94,15 @@ export default function Coaches() {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/coaches/${coachToDelete.id}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}`
-        }, 
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error('Error al eliminar el coach');
 
       setCoaches(coaches.filter(c => c.id !== coachToDelete.id));
       setShowDeleteModal(false);
       setCoachToDelete(null);
+      setSuccessMessage(`Entrenador ${coachToDelete.name} eliminado correctamente`);
+      setShowSuccessModal(true);
     } catch (err) {
       alert(err.message);
     }
@@ -104,6 +110,11 @@ export default function Coaches() {
 
   const handlePageChange = (newPage) => {
     fetchCoaches(newPage);
+  };
+
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+    setSuccessMessage('');
   };
 
   if (loading) return <p>Cargando coaches...</p>;
@@ -140,6 +151,13 @@ export default function Coaches() {
           coach={coachToDelete}
           onCancel={handleCancelDelete}
           onConfirm={handleConfirmDelete}
+        />
+      )}
+
+      {showSuccessModal && (
+        <SuccessModal
+          message={successMessage}
+          onClose={handleCloseSuccessModal}
         />
       )}
     </div>
