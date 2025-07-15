@@ -167,23 +167,31 @@ nav[aria-label="Pagination Navigation"] button[disabled] {
 .navbar {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  padding: 15px 1rem 0;
-  /* quitamos espacio inferior */
+  align-items: center;
+  /* Centra verticalmente todo el contenido */
+  height: 60px;
+  /* Ajusta al alto real de tu navbar */
+  padding: 0 20px;
   background-color: white;
   border-bottom: 1px solid var(--color-border);
+  box-sizing: border-box;
 }
 
-/* Contenedor para centrar pestañas */
+
 .nav-links-wrapper {
-  flex-grow: 1;
+  flex: 1;
   display: flex;
   justify-content: center;
-  margin-bottom: 0;
-  /* asegura que no haya espacio extra */
+  /* pestañas centradas horizontalmente */
+  align-items: flex-end;
+  /* pestañas pegadas abajo */
+  height: 100%;
+  padding-bottom: 0;
+  /* quitar espacio inferior */
+  margin-right: 20px;
+  /* espacio entre pestañas y logout */
 }
 
-/* Pestañas */
 .nav-links {
   display: flex;
   list-style: none;
@@ -191,59 +199,64 @@ nav[aria-label="Pagination Navigation"] button[disabled] {
   padding: 0;
   gap: 0.5rem;
   align-items: flex-end;
+  /* pestañas pegadas abajo */
 }
 
-.nav-links a.active {
-  background-color: var(--color-primary);
-  /* pestaña activa */
-  font-weight: 600;
+.nav-links li {
+  margin: 0;
 }
 
 .nav-links a {
   display: block;
-  padding: 1rem 1.5rem 0.4rem;
+  padding: 0.8rem 1.5rem 0.4rem;
+  /* menos padding abajo para no dejar espacio */
+  background-color: var(--color-primary);
   color: var(--color-text);
   border: 1px solid var(--color-border);
   border-bottom: none;
   border-radius: 8px 8px 0 0;
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
   font-weight: 500;
-  font-size: 1rem;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
   text-decoration: none;
-  margin-bottom: 0;
-  background-color: var(--color-primary-light);
-  /* Activo con azul pastel original */
-  /* quita espacio bajo las pestañas */
-}
-
-.nav-links a:hover {
-  background-color: #cdd9ff;
+  position: relative;
+  top: 1px;
+  /* para ajuste fino */
+  white-space: nowrap;
 }
 
 .nav-links a.active {
   background-color: var(--color-primary);
-  /* pestaña activa más oscura */
+  filter: brightness(85%);
+  cursor: default;
 }
 
-/* Logout button */
+.nav-links a:hover:not(.active) {
+  filter: brightness(90%);
+  box-shadow: 0 -3px 6px rgba(0, 0, 0, 0.08);
+}
+
+
+.logout-wrapper {
+  display: flex;
+  align-items: center;
+  /* Centra verticalmente el botón dentro de este div */
+}
+
 .logout-button {
-  padding: 0.5rem 1.5rem;
-  background-color: var(--color-primary);
-  border: none;
-  border-radius: 9999px;
-  color: var(--color-text);
-  font-weight: 500;
-  font-size: 1rem;
+  /* Mantén aquí tus estilos previos, solo asegúrate que no tenga margin o padding extra que lo desbalancee */
+  height: 36px;
+  /* O la altura que uses */
+  padding: 0 1rem;
   cursor: pointer;
+  border-radius: 20px;
+  background-color: var(--color-primary);
+  color: var(--color-text);
+  border: none;
+  font-weight: 500;
   transition: background-color 0.2s ease;
-  white-space: nowrap;
-  margin-right: 1rem;
-  margin-bottom: 0.4rem;
-  /* igualamos verticalmente */
 }
 
 .logout-button:hover {
   background-color: #839be6;
-  color: var(--color-text);
 }
