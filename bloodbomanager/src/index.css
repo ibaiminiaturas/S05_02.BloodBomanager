@@ -1,11 +1,10 @@
-/* Importar la fuente Roboto desde Google Fonts */
+/* Fuente */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
 :root {
   --color-primary: #a3bffa;
-  /* azul pastel */
+  --color-primary-light: #dce6ff;
   --color-secondary: #f7a399;
-  /* coral pastel */
   --color-background: #f5f7ff;
   --color-text: #000000;
   --color-error: #e53e3e;
@@ -43,12 +42,12 @@ button:hover {
 
 /* Links */
 a {
-  color: var(--color-primary);
+  color: var(--color-text);
   text-decoration: none;
 }
 
 a:hover {
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 /* Encabezados */
@@ -99,7 +98,7 @@ textarea {
   font-family: 'Roboto', sans-serif;
 }
 
-/* Error */
+/* Error y Success */
 .error-message {
   color: var(--color-error);
   background-color: var(--color-error-bg);
@@ -109,7 +108,6 @@ textarea {
   margin-top: 0.5rem;
 }
 
-/* Success */
 .success-message {
   color: #0f5132;
   background-color: var(--color-success-bg);
@@ -165,15 +163,87 @@ nav[aria-label="Pagination Navigation"] button[disabled] {
   cursor: not-allowed;
 }
 
+/* ===== NAVBAR ===== */
 .navbar {
-  padding: 1rem;
-  border-bottom: 1px solid var(--color-border);
-  background-color: white;
   display: flex;
-  gap: 1rem;
-  align-items: center;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 15px 1rem 0;
+  /* quitamos espacio inferior */
+  background-color: white;
+  border-bottom: 1px solid var(--color-border);
 }
 
-.main-content {
-  padding: 1rem;
+/* Contenedor para centrar pestañas */
+.nav-links-wrapper {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0;
+  /* asegura que no haya espacio extra */
+}
+
+/* Pestañas */
+.nav-links {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.nav-links a.active {
+  background-color: var(--color-primary);
+  /* pestaña activa */
+  font-weight: 600;
+}
+
+.nav-links a {
+  display: block;
+  padding: 1rem 1.5rem 0.4rem;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+  font-weight: 500;
+  font-size: 1rem;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+  margin-bottom: 0;
+  background-color: var(--color-primary-light);
+  /* Activo con azul pastel original */
+  /* quita espacio bajo las pestañas */
+}
+
+.nav-links a:hover {
+  background-color: #cdd9ff;
+}
+
+.nav-links a.active {
+  background-color: var(--color-primary);
+  /* pestaña activa más oscura */
+}
+
+/* Logout button */
+.logout-button {
+  padding: 0.5rem 1.5rem;
+  background-color: var(--color-primary);
+  border: none;
+  border-radius: 9999px;
+  color: var(--color-text);
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+  margin-right: 1rem;
+  margin-bottom: 0.4rem;
+  /* igualamos verticalmente */
+}
+
+.logout-button:hover {
+  background-color: #839be6;
+  color: var(--color-text);
 }

@@ -1,8 +1,5 @@
-// src/components/Navbar.jsx
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext.jsx';
-import HoverDropdownMenu from './HoverDropdownMenu.jsx';
-
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -13,19 +10,16 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
-      <Link to="/">Dashboard</Link>
+      <div className="nav-links-wrapper">
+        <ul className="nav-links">
+          <li><NavLink to="/" end>Dashboard</NavLink></li>
+          {hasRole('admin') && (
+            <li><NavLink to="/coaches">Coaches</NavLink></li>
+          )}
+        </ul>
+      </div>
 
-      {hasRole('admin') && (
-        <>
-          {' | '}
-          <Link to="/coaches">Coaches</Link>
-
-
-        </>
-      )}
-
-      {' | '}
-      <button onClick={logout} style={{ cursor: 'pointer' }}>
+      <button className="logout-button" onClick={logout}>
         Logout
       </button>
     </nav>
