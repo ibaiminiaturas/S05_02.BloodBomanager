@@ -111,15 +111,11 @@ export default function Coaches() {
 
   const handlePageChange = (newPage) => fetchCoaches(newPage);
 
-  const handleCloseSuccessModal = () => {
-    setShowSuccessModal(false);
-    setSuccessMessage('');
-  };
   return (
-    <div className="relative">
+    <div className="relative w-full p-4">
       {/* Overlay de carga */}
       {loading && (
-        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/50 backdrop-blur-sm rounded-lg">
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/50 backdrop-blur-[0.5px] rounded-lg">
           <svg
             className="animate-spin h-16 w-16 text-blue-600"
             xmlns="http://www.w3.org/2000/svg"
@@ -154,6 +150,7 @@ export default function Coaches() {
         </div>
 
         <CoachTable
+          className="w-full"
           coaches={coaches}
           onViewDetails={handleViewDetails}
           onDelete={handleRequestDelete}
@@ -186,5 +183,4 @@ export default function Coaches() {
       )}
     </div>
   );
-
 }

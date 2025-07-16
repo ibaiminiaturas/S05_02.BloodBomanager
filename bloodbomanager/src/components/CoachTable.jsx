@@ -12,7 +12,7 @@ export default function CoachTable({ coaches, onViewDetails, onDelete }) {
 
   return (
     <div className="overflow-x-auto max-w-full">
-      <table className="min-w-full border border-gray-300 rounded-md overflow-hidden shadow-md table-fixed">
+      <table className="w-full min-w-full border border-gray-300 rounded-md overflow-hidden shadow-md">
         <thead>
           <tr className="bg-blue-600 text-white">
             <th className="py-3 px-4 text-left w-[50px]">ID</th>
