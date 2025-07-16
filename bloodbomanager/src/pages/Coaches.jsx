@@ -115,7 +115,7 @@ export default function Coaches() {
   return (
     <>
       {/* Título fuera del blur y overlay */}
-      <div className="flex items-center mb-6 space-x-3">
+      <div className="flex items-center mb-6 space-x-3 ml-4">
         <FaUserTie className="text-blue-700 w-10 h-10" />
         <h2 className="text-3xl font-extrabold text-gray-900">Listado de Coaches</h2>
       </div>

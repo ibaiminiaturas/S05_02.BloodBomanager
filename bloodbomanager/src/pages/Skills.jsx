@@ -38,7 +38,7 @@ export default function Skills() {
   return (
     <>
       {/* Título */}
-      <div className="flex items-center mb-6 space-x-3">
+      <div className="flex items-center mb-6 space-x-3 ml-4">
         <FaStar className="text-yellow-500 w-10 h-10" />
         <h2 className="text-3xl font-extrabold text-gray-900">Listado de Habilidades</h2>
       </div>

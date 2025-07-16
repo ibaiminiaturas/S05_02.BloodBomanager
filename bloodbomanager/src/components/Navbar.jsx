@@ -16,6 +16,7 @@ const Navbar = () => {
     { to: '/coaches', label: 'Coaches', roles: ['admin'] },
     { to: '/teams', label: 'Equipos', roles: ['admin'] },
     { to: '/skills', label: 'Habilidades', roles: ['admin', 'coach'] },
+    { to: '/rosters', label: 'Rosters', roles: ['admin', 'coach'] },
   ];
 
   return (
