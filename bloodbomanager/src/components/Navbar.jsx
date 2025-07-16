@@ -34,10 +34,11 @@ const Navbar = () => {
               <Link
                 key={to}
                 to={to}
-                className={`w-28 rounded-t-md shadow-md text-sm transition font-medium flex items-center justify-center h-12
-                  ${isActive
+                style={{ transformOrigin: 'bottom' }}
+                className={`w-28 rounded-t-md shadow-md text-sm transition-transform duration-200 font-medium flex items-center justify-center h-12 transform
+    ${isActive
                     ? 'bg-blue-700 text-white'
-                    : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                    : 'bg-blue-100 text-blue-700 hover:bg-blue-200 hover:scale-110'
                   }`}
               >
                 {label}
