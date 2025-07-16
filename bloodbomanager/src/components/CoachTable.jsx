@@ -2,6 +2,7 @@ import React from 'react';
 import { BiSearch } from 'react-icons/bi';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 
+
 export default function CoachTable({ coaches, onViewDetails, onDelete }) {
   if (!coaches || coaches.length === 0) {
     return (
