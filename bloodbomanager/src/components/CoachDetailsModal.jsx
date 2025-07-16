@@ -1,54 +1,52 @@
 import React from 'react';
 
-export default function CoachDetailsModal({ coach, onClose }) {
+export default function CoachDetailsModal({ coach, onClose, onDeleteRequest }) {
   if (!coach) return null;
 
   return (
-    <div style={modalStyles.overlay}>
-      <div style={modalStyles.modal}>
-        <h2>Detalles del Coach</h2>
-        <p><strong>Nombre:</strong> {coach.name}</p>
-        <p><strong>Email:</strong> {coach.email}</p>
-        <p><strong>Creado:</strong> {new Date(coach.created_at).toLocaleString()}</p>
+    <div className="fixed inset-0 flex justify-center items-start pt-48 z-50 pointer-events-none">
 
-        {/* Mostrar equipos si hay */}
-        <div style={{ marginTop: '1rem' }}>
-          <h3>Equipos</h3>
+      <div
+        className="bg-white rounded-lg shadow-lg max-w-lg w-[90%] p-6 relative pointer-events-auto"
+        style={{ maxHeight: '80vh', overflowY: 'auto' }}
+      >
+        <h2 className="text-2xl font-bold mb-4">Detalles del Coach</h2>
+
+        <p><span className="font-semibold">Nombre:</span> {coach.name}</p>
+        <p><span className="font-semibold">Email:</span> {coach.email}</p>
+        <p><span className="font-semibold">Creado:</span> {new Date(coach.created_at).toLocaleString()}</p>
+
+        <div className="mt-6">
+          <h3 className="text-xl font-semibold mb-2">Equipos</h3>
           {coach.teams && coach.teams.length > 0 ? (
-            <ul>
+            <ul className="list-disc list-inside space-y-1 max-h-48 overflow-auto">
               {coach.teams.map(team => (
                 <li key={team.id}>
-                  <strong>{team.name}</strong> – Valor del equipo: {team.team_value} – Oro restante: {team.gold_remaining}
+                  <span className="font-semibold">{team.name}</span> – Valor: {team.team_value} – Oro restante: {team.gold_remaining}
                 </li>
               ))}
             </ul>
           ) : (
-            <p>Este coach no tiene equipos registrados.</p>
+            <p className="italic text-gray-500">Este coach no tiene equipos registrados.</p>
           )}
         </div>
 
-        <button onClick={onClose} style={{ marginTop: '1rem' }}>
-          Cerrar
-        </button>
+        <div className="flex justify-end space-x-3 mt-8">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded transition"
+          >
+            Cerrar
+          </button>
+
+          <button
+            onClick={() => onDeleteRequest(coach)}
+            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded transition"
+          >
+            Eliminar
+          </button>
+        </div>
       </div>
     </div>
   );
 }
-
-const modalStyles = {
-  overlay: {
-    position: 'fixed',
-    top: 0, left: 0, right: 0, bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    zIndex: 1000
-  },
-  modal: {
-    background: 'white',
-    padding: '2rem',
-    borderRadius: '8px',
-    width: '90%',
-    maxWidth: '500px',
-    boxShadow: '0 2px 10px rgba(0,0,0,0.3)'
-  }
-};

@@ -138,7 +138,15 @@ export default function Coaches() {
 
       {/* Modales y loading detalles */}
       {showDetailsModal && selectedCoach && (
-        <CoachDetailsModal coach={selectedCoach} onClose={handleCloseDetails} />
+        <CoachDetailsModal
+          coach={selectedCoach}
+          onClose={handleCloseDetails}
+          onDeleteRequest={(coach) => {
+            setCoachToDelete(coach);
+            setShowDeleteModal(true);
+            setShowDetailsModal(false); // Opcional: cerrar detalles al abrir eliminar
+          }}
+        />
       )}
 
       {detailsLoading && <LoadingOverlay message="Cargando detalles del coach..." />}
