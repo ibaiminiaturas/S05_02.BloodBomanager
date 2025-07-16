@@ -114,15 +114,16 @@ export default function Coaches() {
 
   return (
     <>
-      {/* Overlay fijo que cubre toda la pantalla, con mayor z-index que navbar */}
-      {loading && <LoadingOverlay message="Cargando coaches..." />}
+      {/* Título fuera del blur y overlay */}
+      <div className="flex items-center mb-6 space-x-3">
+        <FaUserTie className="text-blue-700 w-10 h-10" />
+        <h2 className="text-3xl font-extrabold text-gray-900">Listado de Coaches</h2>
+      </div>
 
-      {/* Contenido normal, que se bluréa al cargar, sin incluir navbar */}
-      <div className={loading ? 'pointer-events-none blur-[0.5px]' : ''}>
-        <div className="flex items-center mb-6 space-x-3">
-          <FaUserTie className="text-blue-700 w-10 h-10" />
-          <h2 className="text-3xl font-extrabold text-gray-900">Listado de Coaches</h2>
-        </div>
+      {/* Contenedor relativo y ancho completo para tabla + paginación */}
+      <div className={`relative max-w-full ${loading ? 'pointer-events-none blur-[0.5px]' : ''}`}>
+        {/* Overlay loading solo sobre este contenedor */}
+        {loading && <LoadingOverlay fullScreen={false} message="Cargando coaches..." />}
 
         <CoachTable
           coaches={coaches}
@@ -133,21 +134,22 @@ export default function Coaches() {
         {pagination && (
           <Pagination pagination={pagination} onPageChange={handlePageChange} />
         )}
-
-        {showDetailsModal && selectedCoach && (
-          <CoachDetailsModal coach={selectedCoach} onClose={handleCloseDetails} />
-        )}
-
-        {detailsLoading && <LoadingOverlay message="Cargando detalles del coach..." />}
-
-        {showDeleteModal && coachToDelete && (
-          <ConfirmDeleteModal
-            coach={coachToDelete}
-            onCancel={handleCancelDelete}
-            onConfirm={handleConfirmDelete}
-          />
-        )}
       </div>
+
+      {/* Modales y loading detalles */}
+      {showDetailsModal && selectedCoach && (
+        <CoachDetailsModal coach={selectedCoach} onClose={handleCloseDetails} />
+      )}
+
+      {detailsLoading && <LoadingOverlay message="Cargando detalles del coach..." />}
+
+      {showDeleteModal && coachToDelete && (
+        <ConfirmDeleteModal
+          coach={coachToDelete}
+          onCancel={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
+        />
+      )}
     </>
   );
 }
