@@ -1,5 +1,5 @@
 import { BiSearch } from 'react-icons/bi';
-import { RiDeleteBin6Line } from 'react-icons/ri';
+import { FaTrash } from 'react-icons/fa';
 
 export default function CoachTable({ coaches, onViewDetails, onDelete }) {
   if (!coaches || coaches.length === 0) {
@@ -50,7 +50,7 @@ export default function CoachTable({ coaches, onViewDetails, onDelete }) {
                     onClick={() => onDelete(coach)}
                     className="flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md shadow-sm transition"
                   >
-                    <RiDeleteBin6Line size={18} />
+                    <FaTrash size={18} />
                     Eliminar
                   </button>
                 </td>
