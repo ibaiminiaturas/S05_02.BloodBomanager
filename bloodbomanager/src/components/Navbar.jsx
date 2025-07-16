@@ -13,6 +13,7 @@ const Navbar = () => {
   const navItems = [
     { to: '/', label: 'Dashboard', roles: [] },
     { to: '/coaches', label: 'Coaches', roles: ['admin'] },
+    { to: '/teams', label: 'Equipos', roles: ['admin'] },
   ];
 
   return (
@@ -24,7 +25,7 @@ const Navbar = () => {
         </div>
 
         {/* Pestañas centradas absoluta */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 flex space-x-4">
+        <div className="absolute left-1/2 transform -translate-x-1/2 flex space-x-4" style={{ bottom: 0 }}>
           {navItems.map(({ to, label, roles }) => {
             if (roles.length && !roles.some(r => hasRole(r))) return null;
             const isActive = location.pathname === to;
@@ -33,8 +34,8 @@ const Navbar = () => {
               <Link
                 key={to}
                 to={to}
-                className={`px-4 py-2 rounded-t-md shadow-md text-sm transition font-medium
-              ${isActive
+                className={`w-28 rounded-t-md shadow-md text-sm transition font-medium flex items-center justify-center h-12
+                  ${isActive
                     ? 'bg-blue-700 text-white'
                     : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
                   }`}
