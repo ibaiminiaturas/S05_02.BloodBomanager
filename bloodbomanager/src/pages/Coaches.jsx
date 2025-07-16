@@ -112,10 +112,13 @@ export default function Coaches() {
   const handlePageChange = (newPage) => fetchCoaches(newPage);
 
   return (
-    <div className="relative w-full p-4">
-      {/* Overlay de carga */}
+    <>
+      {/* Overlay fijo que cubre toda la pantalla, con mayor z-index que navbar */}
       {loading && (
-        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/50 backdrop-blur-[0.5px] rounded-lg">
+        <div
+          className="fixed inset-0 z-50 flex flex-col items-center  justify-start pt-48 bg-white/50 backdrop-blur-sm"
+          style={{ top: '4rem' }} // si tu navbar mide 64px (16*4), baja el overlay para que no tape el navbar
+        >
           <svg
             className="animate-spin h-16 w-16 text-blue-600"
             xmlns="http://www.w3.org/2000/svg"
@@ -142,45 +145,37 @@ export default function Coaches() {
         </div>
       )}
 
-      {/* Contenido con blur solo si está cargando */}
-      <div className={loading ? 'pointer-events-none blur-[1px]' : ''}>
+      {/* Contenido normal, que se bluréa al cargar, sin incluir navbar */}
+      <div className={loading ? 'pointer-events-none blur-[0.5px]' : ''}>
         <div className="flex items-center mb-6 space-x-3">
           <FaUserTie className="text-blue-700 w-10 h-10" />
           <h2 className="text-3xl font-extrabold text-gray-900">Listado de Coaches</h2>
         </div>
 
         <CoachTable
-          className="w-full"
           coaches={coaches}
           onViewDetails={handleViewDetails}
           onDelete={handleRequestDelete}
         />
 
         {pagination && (
-          <Pagination
-            pagination={pagination}
-            onPageChange={handlePageChange}
+          <Pagination pagination={pagination} onPageChange={handlePageChange} />
+        )}
+
+        {showDetailsModal && selectedCoach && (
+          <CoachDetailsModal coach={selectedCoach} onClose={handleCloseDetails} />
+        )}
+
+        {detailsLoading && <p>Cargando detalles del coach...</p>}
+
+        {showDeleteModal && coachToDelete && (
+          <ConfirmDeleteModal
+            coach={coachToDelete}
+            onCancel={handleCancelDelete}
+            onConfirm={handleConfirmDelete}
           />
         )}
       </div>
-
-      {/* Modales */}
-      {showDetailsModal && selectedCoach && (
-        <CoachDetailsModal
-          coach={selectedCoach}
-          onClose={handleCloseDetails}
-        />
-      )}
-
-      {detailsLoading && <p>Cargando detalles del coach...</p>}
-
-      {showDeleteModal && coachToDelete && (
-        <ConfirmDeleteModal
-          coach={coachToDelete}
-          onCancel={handleCancelDelete}
-          onConfirm={handleConfirmDelete}
-        />
-      )}
-    </div>
+    </>
   );
 }
