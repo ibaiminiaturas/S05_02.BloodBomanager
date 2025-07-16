@@ -1,33 +1,60 @@
 // src/components/Navbar.jsx
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext.jsx';
-import HoverDropdownMenu from './HoverDropdownMenu.jsx';
-
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const location = useLocation();
 
   const hasRole = (roleName) => {
     return user?.roles?.some(role => role.name === roleName);
   };
 
+  const navItems = [
+    { to: '/', label: 'Dashboard', roles: [] },
+    { to: '/coaches', label: 'Coaches', roles: ['admin'] },
+  ];
+
   return (
-    <nav style={{ padding: '1rem', borderBottom: '1px solid #ccc' }}>
-      <Link to="/">Dashboard</Link>
+    <nav className="bg-white shadow-lg border-b border-gray-200 relative">
+      <div className="w-full flex items-center justify-between px-6 h-16 relative">
+        {/* Texto a la izquierda */}
+        <div className="text-2xl font-extrabold text-gray-800 whitespace-nowrap">
+          Bloodbowl Manager
+        </div>
 
-      {hasRole('admin') && (
-        <>
-          {' | '}
-          <Link to="/coaches">Coaches</Link>
+        {/* Pestañas centradas absoluta */}
+        <div className="absolute left-1/2 transform -translate-x-1/2 flex space-x-4">
+          {navItems.map(({ to, label, roles }) => {
+            if (roles.length && !roles.some(r => hasRole(r))) return null;
+            const isActive = location.pathname === to;
 
+            return (
+              <Link
+                key={to}
+                to={to}
+                className={`px-4 py-2 rounded-t-md shadow-md text-sm transition font-medium
+              ${isActive
+                    ? 'bg-blue-700 text-white'
+                    : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                  }`}
+              >
+                {label}
+              </Link>
+            );
+          })}
+        </div>
 
-        </>
-      )}
-
-      {' | '}
-      <button onClick={logout} style={{ cursor: 'pointer' }}>
-        Logout
-      </button>
+        {/* Botón logout a la derecha */}
+        <div className="flex items-center">
+          <button
+            onClick={logout}
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
     </nav>
   );
 };
