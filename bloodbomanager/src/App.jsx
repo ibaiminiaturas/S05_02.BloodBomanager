@@ -6,6 +6,8 @@ import AppLayout from './components/AppLayout';
 import Dashboard from './pages/Dashboard';
 import Coaches from './pages/Coaches';
 import Login from './pages/Login';
+import Skills from './pages/Skills.jsx'; // ← importa el componente
+
 
 import { useAuth } from './utils/AuthContext';
 
@@ -23,6 +25,7 @@ export default function App() {
         <Route path="/register" element={<Register />} />
         {/* Redirigir a /login para cualquier otra ruta */}
         <Route path="*" element={<Login />} />
+
       </Routes>
     );
   }
@@ -31,9 +34,11 @@ export default function App() {
     <AppLayout>
       <Routes>
         <Route path="/" element={<Dashboard />} />
+        <Route path="/skills" element={<Skills />} />
         {user.roles.some(r => r.name === 'admin') && (
           <Route path="/coaches" element={<Coaches />} />
         )}
+
       </Routes>
     </AppLayout>
   );
