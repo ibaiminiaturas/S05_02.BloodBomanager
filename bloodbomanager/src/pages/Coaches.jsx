@@ -24,9 +24,6 @@ export default function Coaches() {
   const [coachToDelete, setCoachToDelete] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-
-
-  // fetch listado de coaches
   const fetchCoaches = async (page = 1) => {
     setLoading(true);
     try {
@@ -51,7 +48,6 @@ export default function Coaches() {
     if (token) fetchCoaches();
   }, [token]);
 
-  // fetch de detalles de un coach individual
   const fetchCoachDetails = async (coachId) => {
     setDetailsLoading(true);
     try {
@@ -70,9 +66,7 @@ export default function Coaches() {
     }
   };
 
-  const handleViewDetails = (coach) => {
-    fetchCoachDetails(coach.id);
-  };
+  const handleViewDetails = (coach) => fetchCoachDetails(coach.id);
 
   const handleCloseDetails = () => {
     setSelectedCoach(null);
@@ -100,7 +94,7 @@ export default function Coaches() {
       setCoaches(coaches.filter(c => c.id !== coachToDelete.id));
       setShowDeleteModal(false);
       setCoachToDelete(null);
-      // NUEVO: alerta SweetAlert de éxito
+
       MySwal.fire({
         icon: 'success',
         title: 'Eliminado',
@@ -108,7 +102,6 @@ export default function Coaches() {
         position: 'top',
         timer: 2000,
         showConfirmButton: false,
-        // toast: true,
         timerProgressBar: true,
       });
     } catch (err) {
@@ -116,65 +109,65 @@ export default function Coaches() {
     }
   };
 
-  const handlePageChange = (newPage) => {
-    fetchCoaches(newPage);
-  };
+  const handlePageChange = (newPage) => fetchCoaches(newPage);
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
     setSuccessMessage('');
   };
-
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-[70vh] space-y-6 text-blue-600">
-        <svg
-          className="animate-spin h-16 w-16 text-blue-600"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-          />
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8v8H4z"
-          />
-        </svg>
-        <p className="text-4xl font-extrabold tracking-wide">Cargando...</p>
-      </div>
-    );
-  }
-
-  if (error) return <p style={{ color: 'red' }}>{error}</p>;
-
   return (
-    <div>
-      <div className="flex items-center mb-6 space-x-3">
-        <FaUserTie className="text-blue-700 w-10 h-10" />
-        <h2 className="text-3xl font-extrabold text-gray-900">Listado de Coaches</h2>
-      </div>
-
-      <CoachTable
-        coaches={coaches}
-        onViewDetails={handleViewDetails}
-        onDelete={handleRequestDelete}
-      />
-
-      {pagination && (
-        <Pagination
-          pagination={pagination}
-          onPageChange={handlePageChange}
-        />
+    <div className="relative">
+      {/* Overlay de carga */}
+      {loading && (
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/50 backdrop-blur-sm rounded-lg">
+          <svg
+            className="animate-spin h-16 w-16 text-blue-600"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v8H4z"
+            />
+          </svg>
+          <p className="text-4xl font-extrabold text-blue-700 mt-4 drop-shadow-lg">
+            Cargando...
+          </p>
+        </div>
       )}
 
+      {/* Contenido con blur solo si está cargando */}
+      <div className={loading ? 'pointer-events-none blur-[1px]' : ''}>
+        <div className="flex items-center mb-6 space-x-3">
+          <FaUserTie className="text-blue-700 w-10 h-10" />
+          <h2 className="text-3xl font-extrabold text-gray-900">Listado de Coaches</h2>
+        </div>
+
+        <CoachTable
+          coaches={coaches}
+          onViewDetails={handleViewDetails}
+          onDelete={handleRequestDelete}
+        />
+
+        {pagination && (
+          <Pagination
+            pagination={pagination}
+            onPageChange={handlePageChange}
+          />
+        )}
+      </div>
+
+      {/* Modales */}
       {showDetailsModal && selectedCoach && (
         <CoachDetailsModal
           coach={selectedCoach}
@@ -191,8 +184,7 @@ export default function Coaches() {
           onConfirm={handleConfirmDelete}
         />
       )}
-
-
     </div>
   );
+
 }
