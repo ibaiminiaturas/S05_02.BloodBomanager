@@ -7,6 +7,7 @@ import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import Pagination from '../components/Pagination.jsx';
 import MySwal from '../utils/MySwal.js';
 import { FaUserTie } from 'react-icons/fa';
+import LoadingOverlay from '../components/LoadingOverlay.jsx';
 
 export default function Coaches() {
   const { token } = useAuth();
@@ -114,36 +115,7 @@ export default function Coaches() {
   return (
     <>
       {/* Overlay fijo que cubre toda la pantalla, con mayor z-index que navbar */}
-      {loading && (
-        <div
-          className="fixed inset-0 z-50 flex flex-col items-center  justify-start pt-48 bg-white/50 backdrop-blur-sm"
-          style={{ top: '4rem' }} // si tu navbar mide 64px (16*4), baja el overlay para que no tape el navbar
-        >
-          <svg
-            className="animate-spin h-16 w-16 text-blue-600"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8v8H4z"
-            />
-          </svg>
-          <p className="text-4xl font-extrabold text-blue-700 mt-4 drop-shadow-lg">
-            Cargando...
-          </p>
-        </div>
-      )}
+      {loading && <LoadingOverlay message="Cargando coaches..." />}
 
       {/* Contenido normal, que se bluréa al cargar, sin incluir navbar */}
       <div className={loading ? 'pointer-events-none blur-[0.5px]' : ''}>
@@ -166,7 +138,7 @@ export default function Coaches() {
           <CoachDetailsModal coach={selectedCoach} onClose={handleCloseDetails} />
         )}
 
-        {detailsLoading && <p>Cargando detalles del coach...</p>}
+        {detailsLoading && <LoadingOverlay message="Cargando detalles del coach..." />}
 
         {showDeleteModal && coachToDelete && (
           <ConfirmDeleteModal
