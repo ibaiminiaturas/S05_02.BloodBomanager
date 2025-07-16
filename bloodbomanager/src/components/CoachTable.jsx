@@ -11,7 +11,7 @@ export default function CoachTable({ coaches, onViewDetails, onDelete }) {
   }
 
   return (
-    <div className="overflow-x-auto max-w-full">
+    <div className="overflow-x-auto max-w-full ml-4 mr-4">
       <table className="w-full min-w-full border border-gray-300 rounded-md overflow-hidden shadow-md">
         <thead>
           <tr className="bg-blue-600 text-white">
