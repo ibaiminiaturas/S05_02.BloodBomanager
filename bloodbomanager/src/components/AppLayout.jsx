@@ -2,13 +2,16 @@
 import React from 'react';
 import Navbar from './Navbar';
 
-export default function AppLayout({ children }) {
+const AppLayout = ({ children }) => {
   return (
-    <div>
+    <>
       <Navbar />
-      <main style={{ padding: '1rem' }}>
+      {/* Padding top para que el contenido no quede oculto bajo navbar de 64px */}
+      <main className="pt-20">
         {children}
       </main>
-    </div>
+    </>
   );
-}
+};
+
+export default AppLayout;
