@@ -2,12 +2,14 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../utils/AuthContext.jsx';
 import LoadingOverlay from '../components/LoadingOverlay.jsx';
+import RostersTable from '../components/RostersTable.jsx';
 import { FaUsers } from 'react-icons/fa';
 
 export default function Rosters() {
   const { token } = useAuth();
 
   const [rosters, setRosters] = useState([]);
+  const [selectedRosterId, setSelectedRosterId] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -34,6 +36,12 @@ export default function Rosters() {
     if (token) fetchRosters();
   }, [token]);
 
+  const handleRosterChange = (e) => {
+    setSelectedRosterId(e.target.value);
+  };
+
+  const selectedRoster = rosters.find(r => r.id === parseInt(selectedRosterId));
+
   return (
     <>
       {/* Título */}
@@ -52,19 +60,26 @@ export default function Rosters() {
           </div>
         )}
 
-       <div className="max-w-md mb-6 ml-4">
-            <select
-                id="rosterSelect"
-                className="w-full px-4 py-2 bg-blue-50 border border-blue-300 text-blue-800 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500"
-            >
+        <div className="max-w-md mb-6 ml-4">
+          <select
+            id="rosterSelect"
+            onChange={handleRosterChange}
+            value={selectedRosterId}
+            className="w-full px-4 py-2 bg-blue-50 border border-blue-300 text-blue-800 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500"
+          >
                 <option value="">-- Elige un roster --</option>
-                {rosters.map((roster) => (
-                <option key={roster.id} value={roster.id}>
-                    {roster.name}
-                </option>
-                ))}
-            </select>
+            {rosters.map((roster) => (
+              <option key={roster.id} value={roster.id}>
+                {roster.name}
+              </option>
+            ))}
+          </select>
         </div>
+
+        {/* Tabla de player types */}
+        {selectedRoster && (
+          <RostersTable playerTypes={selectedRoster.player_types} />
+        )}
       </div>
     </>
   );
