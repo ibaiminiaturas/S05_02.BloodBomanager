@@ -14,9 +14,10 @@ const Navbar = () => {
   const navItems = [
     { to: '/', label: 'Dashboard', roles: [] },
     { to: '/coaches', label: 'Coaches', roles: ['admin'] },
-    { to: '/teams', label: 'Equipos', roles: ['admin'] },
+    { to: '/teams', label: 'Equipos', roles: ['admin', 'coach'] },
     { to: '/skills', label: 'Habilidades', roles: ['admin', 'coach'] },
     { to: '/rosters', label: 'Rosters', roles: ['admin', 'coach'] },
+
   ];
 
   return (
@@ -26,27 +27,27 @@ const Navbar = () => {
       </div>
 
 
-<div className="flex-1 flex justify-center items-end space-x-4 h-full">
-  {navItems.map(({ to, label, roles }) => {
-    if (roles.length && !roles.some(r => hasRole(r))) return null;
-    const isActive = location.pathname === to;
+      <div className="flex-1 flex justify-center items-end space-x-4 h-full">
+        {navItems.map(({ to, label, roles }) => {
+          if (roles.length && !roles.some(r => hasRole(r))) return null;
+          const isActive = location.pathname === to;
 
-    return (
-      <Link
-  key={to}
-  to={to}
-  className={`rounded-t-md shadow-md text-sm transition-transform duration-200 origin-bottom font-medium flex items-center justify-center px-4
+          return (
+            <Link
+              key={to}
+              to={to}
+              className={`rounded-t-md shadow-md text-sm transition-transform duration-200 origin-bottom font-medium flex items-center justify-center px-4
     ${isActive
-      ? 'bg-blue-700 text-white h-12 scale-105'
-      : 'bg-blue-100 text-blue-700 hover:bg-blue-200 hover:scale-105 h-12'
-    }`}
-  style={{ minWidth: '100px' }}
->
-  {label}
-</Link>
-    );
-  })}
-</div>
+                  ? 'bg-blue-700 text-white h-12 scale-105'
+                  : 'bg-blue-100 text-blue-700 hover:bg-blue-200 hover:scale-105 h-12'
+                }`}
+              style={{ minWidth: '100px' }}
+            >
+              {label}
+            </Link>
+          );
+        })}
+      </div>
 
 
 
