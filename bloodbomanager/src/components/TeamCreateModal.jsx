@@ -20,7 +20,7 @@ export default function TeamCreateModal({ onClose, onCreate }) {
 
   useEffect(() => {
     if (!token) return;
-
+setGoldRemaining(1000000);
     const fetchCoaches = async () => {
       setLoadingCoaches(true);
       try {

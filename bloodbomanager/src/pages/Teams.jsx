@@ -61,13 +61,113 @@ export default function Teams() {
         setShowEditModal(false);
     };
 
-    const handleSaveEditedTeam = async (updatedTeam) => {
-        // ... aquí tu código actual sin cambios ...
-    };
+const handleSaveEditedTeam = async (updatedTeam) => {
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/teams/${updatedTeam.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        name: updatedTeam.name,
+        team_value: updatedTeam.team_value,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      if (res.status === 422 && data.errors) {
+        const errorMessages = Object.values(data.errors).flat().join('\n');
+        return MySwal.fire({
+          icon: 'error',
+          title: 'Error de validación',
+          text: errorMessages,
+        });
+      }
+
+      const errText = data.message || 'Error al actualizar el equipo';
+      throw new Error(errText);
+    }
+
+    const updatedData = data.data || data;
+    const updatedList = teams.map(t => t.id === updatedData.id ? updatedData : t);
+    setTeams(updatedList);
+    
+    handleCloseEditModal();
+
+    return MySwal.fire({
+      icon: 'success',
+      title: 'Equipo actualizado',
+      text: `El equipo "${updatedData.name}" se actualizó correctamente.`,
+      timer: 2000,
+      showConfirmButton: false,
+    });
+
+  } catch (err) {
+    return MySwal.fire({
+      icon: 'error',
+      title: 'Error al guardar cambios',
+      text: err.message || 'Ocurrió un error desconocido.',
+    });
+  }
+};
+
 
     const handleDelete = async (team) => {
-        // ... aquí tu código actual sin cambios ...
-    };
+  const confirm = await MySwal.fire({
+    title: `¿Eliminar equipo "${team.name}"?`,
+    text: 'Esta acción no se puede deshacer.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+    customClass: {
+      overlay: 'bg-transparent',
+    },
+  });
+
+  if (!confirm.isConfirmed) return;
+
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/teams/${team.id}`, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      const errText = data.message || 'Error al eliminar el equipo';
+      throw new Error(errText);
+    }
+
+    const updatedList = teams.filter(t => t.id !== team.id);
+    setTeams(updatedList);
+    
+
+    MySwal.fire({
+      icon: 'success',
+      title: 'Equipo eliminado',
+      text: `El equipo "${team.name}" se eliminó correctamente.`,
+      timer: 2000,
+      showConfirmButton: false,
+    });
+
+  } catch (err) {
+    MySwal.fire({
+      icon: 'error',
+      title: 'Error al eliminar equipo',
+      text: err.message || 'Ocurrió un error desconocido.',
+    });
+  }
+};
+
 
     const handlePageChange = (newPage) => {
         fetchTeams(newPage);
