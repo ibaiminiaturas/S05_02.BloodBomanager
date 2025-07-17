@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-
+import LoadingOverlay from '../components/LoadingOverlay.jsx';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -60,7 +60,11 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ token, user, login, logout, loading }}>
-      {loading ? <p>Cargando...</p> : children}
+      {loading ? (
+        <LoadingOverlay fullScreen={true} message="Autenticando..." />
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 };

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import AppLayout from './components/AppLayout';
+import LoadingOverlay from './components/LoadingOverlay.jsx';
 
 // Importa aquí tus componentes de página
 import Dashboard from './pages/Dashboard';
@@ -17,7 +18,11 @@ import Register from './pages/Register';  // importa el componente Register
 export default function App() {
   const { user, loading } = useAuth();
 
-  if (loading) return <p>Cargando...</p>;
+  {/* Contenedor relativo y ancho completo para tabla + paginación */ }
+  <div className={`relative max-w-full ${loading ? 'pointer-events-none blur-[0.5px]' : ''}`}>
+    {/* Overlay loading solo sobre este contenedor */}
+    {loading && <LoadingOverlay fullScreen={false} message="Cargando..." />}
+  </div>
 
   if (!user) {
     return (
