@@ -6,6 +6,7 @@ import TeamsTable from '../components/TeamsTable.jsx';
 import TeamEditModal from '../components/TeamEditModal.jsx';
 import Pagination from '../components/Pagination.jsx';  // <- IMPORTA este componente
 import MySwal from '../utils/MySwal.js';
+import TeamCreateModal from '../components/TeamCreateModal.jsx';
 
 export default function Teams() {
     const { token } = useAuth();
@@ -17,6 +18,7 @@ export default function Teams() {
 
     const [selectedTeam, setSelectedTeam] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
+    const [showCreateModal, setShowCreateModal] = useState(false);
 
     const fetchTeams = async (page = 1) => {
         setLoading(true);
@@ -94,6 +96,15 @@ export default function Teams() {
                 {pagination && (
                     <Pagination pagination={pagination} onPageChange={handlePageChange} />
                 )}
+
+                <div className="mt-4 flex justify-center">
+                <button
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow"
+                    onClick={() => setShowCreateModal(true)}
+                >
+                    Crear Equipo
+                </button>
+                </div>
             </div>
 
             {/* Modal de edición */}
@@ -104,6 +115,62 @@ export default function Teams() {
                     onSave={handleSaveEditedTeam}
                 />
             )}
+{showCreateModal && (
+  <TeamCreateModal
+    onClose={() => setShowCreateModal(false)}
+    onCreate={async (newTeam) => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/teams`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(newTeam),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          if (res.status === 422 && data.errors) {
+            const errorMessages = Object.values(data.errors).flat().join('\n');
+            return MySwal.fire({
+              icon: 'error',
+              title: 'Error de validación',
+              text: errorMessages,
+            });
+          }
+          throw new Error(data.message || 'Error al crear el equipo');
+        }
+
+        // Añadir el nuevo equipo a la lista y cache
+        setTeams((prev) => {
+          const updated = [data.data || data, ...prev];
+          
+          return updated;
+        });
+
+        setShowCreateModal(false);
+
+        MySwal.fire({
+          icon: 'success',
+          title: 'Equipo creado',
+          text: `El equipo "${newTeam.name}" se creó correctamente.`,
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      } catch (err) {
+        MySwal.fire({
+          icon: 'error',
+          title: 'Error al crear equipo',
+          text: err.message,
+        });
+      }
+    }}
+  />
+)}
+
         </>
     );
 }
