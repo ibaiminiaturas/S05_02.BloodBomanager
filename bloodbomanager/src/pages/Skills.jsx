@@ -1,15 +1,21 @@
-// src/pages/skills.jsx
+// src/pages/Skills.jsx
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../utils/AuthContext.jsx';
 import SkillTable from '../components/SkillsTable.jsx';
 import LoadingOverlay from '../components/LoadingOverlay.jsx';
 import { FaStar } from 'react-icons/fa';
 
+const STORAGE_KEY = 'cachedSkills';
+
 export default function Skills() {
   const { token } = useAuth();
 
-  const [skills, setSkills] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // Inicializamos el estado con el cache si existe
+  const [skills, setSkills] = useState(() => {
+    const cached = sessionStorage.getItem(STORAGE_KEY);
+    return cached ? JSON.parse(cached) : [];
+  });
+  const [loading, setLoading] = useState(skills.length === 0);
   const [error, setError] = useState('');
 
   const fetchSkills = async () => {
@@ -23,6 +29,7 @@ export default function Skills() {
 
       const data = await res.json();
       setSkills(data.data);
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data.data)); // Guardamos en cache
       setError('');
     } catch (err) {
       setError(err.message);
@@ -32,7 +39,9 @@ export default function Skills() {
   };
 
   useEffect(() => {
-    if (token) fetchSkills();
+    if (token && skills.length === 0) {
+      fetchSkills();
+    }
   }, [token]);
 
   return (
