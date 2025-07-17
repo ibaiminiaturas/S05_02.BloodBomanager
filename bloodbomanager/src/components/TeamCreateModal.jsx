@@ -1,96 +1,183 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '../utils/AuthContext.jsx';
 
 export default function TeamCreateModal({ onClose, onCreate }) {
-  const [form, setForm] = useState({
-    name: '',
-    coach: '',
-    roster: '',
-    gold_remaining: '',
-    team_value: '',
-  });
+  const { token } = useAuth();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((f) => ({ ...f, [name]: value }));
-  };
+  const [name, setName] = useState('');
+  const [coachId, setCoachId] = useState('');
+  const [rosterId, setRosterId] = useState('');
+  const [goldRemaining, setGoldRemaining] = useState('');
+  const [teamValue, setTeamValue] = useState('');
+
+  const [coaches, setCoaches] = useState([]);
+  const [loadingCoaches, setLoadingCoaches] = useState(false);
+  const [errorCoaches, setErrorCoaches] = useState('');
+
+  const [rosters, setRosters] = useState([]);
+  const [loadingRosters, setLoadingRosters] = useState(false);
+  const [errorRosters, setErrorRosters] = useState('');
+
+  useEffect(() => {
+    if (!token) return;
+
+    const fetchCoaches = async () => {
+      setLoadingCoaches(true);
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/coaches`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error('Error al cargar entrenadores');
+        const data = await res.json();
+        setCoaches(data.data.data || []); // Ajusta si tu API es distinta
+        setErrorCoaches('');
+      } catch (err) {
+        setErrorCoaches(err.message);
+      } finally {
+        setLoadingCoaches(false);
+      }
+    };
+
+    const fetchRosters = async () => {
+      setLoadingRosters(true);
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/rosters`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error('Error al cargar rosters');
+        const data = await res.json();
+        setRosters(data.data || []);
+        setErrorRosters('');
+      } catch (err) {
+        setErrorRosters(err.message);
+      } finally {
+        setLoadingRosters(false);
+      }
+    };
+
+    fetchCoaches();
+    fetchRosters();
+  }, [token]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Validaciones básicas aquí (opcional)
-
     onCreate({
-      name: form.name,
-      coach_id: form.coach,  // por ahora texto, después se cambiará a id
-      roster_id: form.roster,
-      gold_remaining: Number(form.gold_remaining),
-      team_value: Number(form.team_value),
+      name,
+      coach_id: coachId,
+      roster_id: rosterId,
+      gold_remaining: goldRemaining,
+      team_value: teamValue,
     });
   };
 
   return (
-    <div className="fixed inset-0 bg-opacity-30 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
+    <div className="fixed inset-0 flex justify-center items-center z-50 pointer-events-none">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full pointer-events-auto"
+      >
         <h3 className="text-xl font-semibold mb-4">Crear nuevo equipo</h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
+
+        <label className="block mb-3">
+          Nombre:
           <input
-            name="name"
-            placeholder="Nombre"
-            value={form.name}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded px-3 py-2"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full border border-gray-300 rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
-          <input
-            name="coach"
-            placeholder="Coach"
-            value={form.coach}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded px-3 py-2"
-          />
-          <input
-            name="roster"
-            placeholder="Roster"
-            value={form.roster}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded px-3 py-2"
-          />
-          <input
-            name="gold_remaining"
-            type="number"
-            placeholder="Gold Remaining"
-            value={form.gold_remaining}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded px-3 py-2"
-            min={0}
-          />
-          <input
-            name="team_value"
-            type="number"
-            placeholder="Team Value"
-            value={form.team_value}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded px-3 py-2"
-            min={0}
-          />
+        </label>
 
-          <div className="flex justify-end space-x-2 pt-4 border-t border-gray-200">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+        <label className="block mb-3">
+          Entrenador:
+          {loadingCoaches ? (
+            <p className="text-gray-500 mt-1">Cargando entrenadores...</p>
+          ) : errorCoaches ? (
+            <p className="text-red-600 mt-1">{errorCoaches}</p>
+          ) : (
+            <select
+              value={coachId}
+              onChange={(e) => setCoachId(e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
             >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+              <option value="">Selecciona un entrenador</option>
+              {coaches.map((coach) => (
+                <option key={coach.id} value={coach.id}>
+                  {coach.name}
+                </option>
+              ))}
+            </select>
+          )}
+        </label>
+
+        <label className="block mb-3">
+          Roster:
+          {loadingRosters ? (
+            <p className="text-gray-500 mt-1">Cargando rosters...</p>
+          ) : errorRosters ? (
+            <p className="text-red-600 mt-1">{errorRosters}</p>
+          ) : (
+            <select
+              value={rosterId}
+              onChange={(e) => setRosterId(e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
             >
-              Crear
-            </button>
-          </div>
-        </form>
-      </div>
+              <option value="">Selecciona un roster</option>
+              {rosters.map((roster) => (
+                <option key={roster.id} value={roster.id}>
+                  {roster.name}
+                </option>
+              ))}
+            </select>
+          )}
+        </label>
+
+        <label className="block mb-3">
+          Oro restante:
+          <input
+            type="number"
+            value={goldRemaining}
+            onChange={(e) => setGoldRemaining(e.target.value)}
+            className="w-full border border-gray-300 rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            min="0"
+            required
+          />
+        </label>
+
+        <label className="block mb-5">
+          Valor del equipo:
+          <input
+            type="number"
+            value={teamValue}
+            onChange={(e) => setTeamValue(e.target.value)}
+            className="w-full border border-gray-300 rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            min="0"
+            required
+          />
+        </label>
+
+        <div className="flex justify-end space-x-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            disabled={
+              !name || !coachId || !rosterId || !goldRemaining || !teamValue
+            }
+            className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+          >
+            Crear
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
