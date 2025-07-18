@@ -8,6 +8,7 @@ import Pagination from '../components/Pagination.jsx';
 import MySwal from '../utils/MySwal.js';
 import TeamCreateModal from '../components/TeamCreateModal.jsx';
 import TeamViewModal from '../components/TeamViewModal.jsx'; // ← nuevo import
+import PlayerEditModal from '../components/PlayerEditModal';
 
 export default function Teams() {
     const { token } = useAuth();
@@ -22,6 +23,83 @@ export default function Teams() {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showTeamModal, setShowTeamModal] = useState(false); // ← nuevo estado
 
+    const [playerToEdit, setPlayerToEdit] = useState(null); // jugador para editar
+    const [isPlayerEditOpen, setIsPlayerEditOpen] = useState(false);
+
+    const handleEditPlayer = (player) => {
+        setPlayerToEdit(player);
+        setIsPlayerEditOpen(true);
+    };
+
+    const handleClosePlayerEdit = () => {
+        setIsPlayerEditOpen(false);
+        setPlayerToEdit(null);
+    };
+
+ const handleSavePlayer = async (updatedPlayer) => {
+    try {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/players/${updatedPlayer.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                injuries: updatedPlayer.injuries,
+                spp: updatedPlayer.spp,
+            }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            if (res.status === 422 && data.errors) {
+                const errorMessages = Object.values(data.errors).flat().join('\n');
+                return MySwal.fire({
+                    icon: 'error',
+                    title: 'Error de validación',
+                    text: errorMessages,
+                });
+            }
+            throw new Error(data.message || 'Error al actualizar el jugador');
+        }
+
+        const updatedData = data.player || data;
+
+if (selectedTeam && selectedTeam.team_players) {
+  const updatedPlayers = selectedTeam.team_players.map(p =>
+    p.id === updatedData.id ? { ...p, ...updatedData } : p
+  );
+
+  setSelectedTeam({
+    ...selectedTeam,
+    team_players: updatedPlayers,
+  });
+}
+        // Si tienes un estado para el jugador en edición, actualízalo también:
+        setPlayerToEdit(updatedData);
+
+        handleClosePlayerEdit();
+
+        await MySwal.fire({
+            icon: 'success',
+            title: 'Jugador actualizado',
+            text: `El jugador "${updatedData.name}" se actualizó correctamente.`,
+            timer: 2000,
+            showConfirmButton: false,
+        });
+    } catch (err) {
+        return MySwal.fire({
+            icon: 'error',
+            title: 'Error al guardar cambios',
+            text: err.message || 'Ocurrió un error desconocido.',
+        });
+    }
+};
+
+
+
     const fetchTeams = async (page = 1) => {
         setLoading(true);
         try {
@@ -32,8 +110,8 @@ export default function Teams() {
             if (!res.ok) throw new Error('Error al obtener los equipos');
 
             const data = await res.json();
-            console.log(data);
-            setTeams(data.data);
+
+            setTeams(data.data.data);
             setPagination(data.data);
             setError('');
         } catch (err) {
@@ -171,7 +249,7 @@ export default function Teams() {
 
     const handleView = async (team) => {
         try {
-                  console.log('Intentando ver equipo:', team.id);
+            console.log('Intentando ver equipo:', team.id);
             const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/teams/${team.id}`, {
                 method: 'GET',
                 headers: {
@@ -180,14 +258,14 @@ export default function Teams() {
             });
 
             const data = await res.json();
-        console.log('Datos recibidos:', data);
+            console.log('Datos recibidos:', data);
             if (!res.ok) {
                 throw new Error(data.message || 'Error al obtener los datos del equipo');
             }
 
             setSelectedTeam(data.data);
             setShowTeamModal(true);
-              console.log('Modal debe mostrarse ahora');
+            console.log('Modal debe mostrarse ahora');
         } catch (err) {
             MySwal.fire({
                 icon: 'error',
@@ -199,6 +277,19 @@ export default function Teams() {
 
     const handlePageChange = (newPage) => {
         fetchTeams(newPage);
+    };
+
+    const handleModalEdit = (player) => {
+        // Ahora abre el modal para editar jugador, no solo alerta
+        handleEditPlayer(player);
+    };
+
+    const handleModalDelete = (player) => {
+        MySwal.fire({
+            icon: 'success',
+            title: 'Funcionando',
+            text: `Eliminar jugador: ${player.name}`,
+        });
     };
 
     return (
@@ -298,13 +389,23 @@ export default function Teams() {
             {/* Modal de visualización */}
             {showTeamModal && selectedTeam && (
                 <TeamViewModal
-        isOpen={showTeamModal}
-
-        team={selectedTeam}
+                    isOpen={showTeamModal}
+                    onEditPlayer={handleModalEdit}      // usa el nombre que espera TeamViewModal
+                    onDeletePlayer={handleModalDelete}
+                    team={selectedTeam}
                     onClose={() => {
                         setSelectedTeam(null);
                         setShowTeamModal(false);
                     }}
+                />
+            )}
+
+            {/* Modal de edición de jugador */}
+            {isPlayerEditOpen && playerToEdit && (
+                <PlayerEditModal
+                    player={playerToEdit}
+                    onClose={handleClosePlayerEdit}
+                    onSave={handleSavePlayer}
                 />
             )}
         </>

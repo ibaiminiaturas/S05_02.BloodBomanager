@@ -29,6 +29,7 @@ export default function TeamsTable({ teams, onEdit, onDelete, onView }) {
                     </tr>
                 </thead>
                 <tbody>
+                    
                     {teams.map((team, i) => {
                         const createdDate = new Date(team.created_at).toLocaleDateString();
                         return (
