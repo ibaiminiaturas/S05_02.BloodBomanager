@@ -4,9 +4,10 @@ import LoadingOverlay from '../components/LoadingOverlay.jsx';
 import { FaFootballBall } from 'react-icons/fa';
 import TeamsTable from '../components/TeamsTable.jsx';
 import TeamEditModal from '../components/TeamEditModal.jsx';
-import Pagination from '../components/Pagination.jsx';  // <- IMPORTA este componente
+import Pagination from '../components/Pagination.jsx';
 import MySwal from '../utils/MySwal.js';
 import TeamCreateModal from '../components/TeamCreateModal.jsx';
+import TeamViewModal from '../components/TeamViewModal.jsx'; // ← nuevo import
 
 export default function Teams() {
     const { token } = useAuth();
@@ -19,6 +20,7 @@ export default function Teams() {
     const [selectedTeam, setSelectedTeam] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showTeamModal, setShowTeamModal] = useState(false); // ← nuevo estado
 
     const fetchTeams = async (page = 1) => {
         setLoading(true);
@@ -30,8 +32,9 @@ export default function Teams() {
             if (!res.ok) throw new Error('Error al obtener los equipos');
 
             const data = await res.json();
-            setTeams(data.data.data);       // datos de la página actual (suponiendo estructura Laravel)
-            setPagination(data.data);       // meta y links de paginación
+            console.log(data);
+            setTeams(data.data);
+            setPagination(data.data);
             setError('');
         } catch (err) {
             setError(err.message);
@@ -61,113 +64,138 @@ export default function Teams() {
         setShowEditModal(false);
     };
 
-const handleSaveEditedTeam = async (updatedTeam) => {
-  try {
-    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/teams/${updatedTeam.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        name: updatedTeam.name,
-        team_value: updatedTeam.team_value,
-      }),
-    });
+    const handleSaveEditedTeam = async (updatedTeam) => {
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/teams/${updatedTeam.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    name: updatedTeam.name,
+                    team_value: updatedTeam.team_value,
+                }),
+            });
 
-    const data = await res.json();
+            const data = await res.json();
 
-    if (!res.ok) {
-      if (res.status === 422 && data.errors) {
-        const errorMessages = Object.values(data.errors).flat().join('\n');
-        return MySwal.fire({
-          icon: 'error',
-          title: 'Error de validación',
-          text: errorMessages,
-        });
-      }
+            if (!res.ok) {
+                if (res.status === 422 && data.errors) {
+                    const errorMessages = Object.values(data.errors).flat().join('\n');
+                    return MySwal.fire({
+                        icon: 'error',
+                        title: 'Error de validación',
+                        text: errorMessages,
+                    });
+                }
 
-      const errText = data.message || 'Error al actualizar el equipo';
-      throw new Error(errText);
-    }
+                const errText = data.message || 'Error al actualizar el equipo';
+                throw new Error(errText);
+            }
 
-    const updatedData = data.data || data;
-    const updatedList = teams.map(t => t.id === updatedData.id ? updatedData : t);
-    setTeams(updatedList);
-    
-    handleCloseEditModal();
+            const updatedData = data.data || data;
+            const updatedList = teams.map(t => t.id === updatedData.id ? updatedData : t);
+            setTeams(updatedList);
 
-    return MySwal.fire({
-      icon: 'success',
-      title: 'Equipo actualizado',
-      text: `El equipo "${updatedData.name}" se actualizó correctamente.`,
-      timer: 2000,
-      showConfirmButton: false,
-    });
+            handleCloseEditModal();
 
-  } catch (err) {
-    return MySwal.fire({
-      icon: 'error',
-      title: 'Error al guardar cambios',
-      text: err.message || 'Ocurrió un error desconocido.',
-    });
-  }
-};
+            return MySwal.fire({
+                icon: 'success',
+                title: 'Equipo actualizado',
+                text: `El equipo "${updatedData.name}" se actualizó correctamente.`,
+                timer: 2000,
+                showConfirmButton: false,
+            });
 
+        } catch (err) {
+            return MySwal.fire({
+                icon: 'error',
+                title: 'Error al guardar cambios',
+                text: err.message || 'Ocurrió un error desconocido.',
+            });
+        }
+    };
 
     const handleDelete = async (team) => {
-  const confirm = await MySwal.fire({
-    title: `¿Eliminar equipo "${team.name}"?`,
-    text: 'Esta acción no se puede deshacer.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Sí, eliminar',
-    cancelButtonText: 'Cancelar',
-    customClass: {
-      overlay: 'bg-transparent',
-    },
-  });
+        const confirm = await MySwal.fire({
+            title: `¿Eliminar equipo "${team.name}"?`,
+            text: 'Esta acción no se puede deshacer.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            customClass: {
+                overlay: 'bg-transparent',
+            },
+        });
 
-  if (!confirm.isConfirmed) return;
+        if (!confirm.isConfirmed) return;
 
-  try {
-    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/teams/${team.id}`, {
-      method: 'DELETE',
-      headers: {
-        'Accept': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    });
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/teams/${team.id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Accept': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
-    const data = await res.json();
+            const data = await res.json();
 
-    if (!res.ok) {
-      const errText = data.message || 'Error al eliminar el equipo';
-      throw new Error(errText);
-    }
+            if (!res.ok) {
+                const errText = data.message || 'Error al eliminar el equipo';
+                throw new Error(errText);
+            }
 
-    const updatedList = teams.filter(t => t.id !== team.id);
-    setTeams(updatedList);
-    
+            const updatedList = teams.filter(t => t.id !== team.id);
+            setTeams(updatedList);
 
-    MySwal.fire({
-      icon: 'success',
-      title: 'Equipo eliminado',
-      text: `El equipo "${team.name}" se eliminó correctamente.`,
-      timer: 2000,
-      showConfirmButton: false,
-    });
+            MySwal.fire({
+                icon: 'success',
+                title: 'Equipo eliminado',
+                text: `El equipo "${team.name}" se eliminó correctamente.`,
+                timer: 2000,
+                showConfirmButton: false,
+            });
 
-  } catch (err) {
-    MySwal.fire({
-      icon: 'error',
-      title: 'Error al eliminar equipo',
-      text: err.message || 'Ocurrió un error desconocido.',
-    });
-  }
-};
+        } catch (err) {
+            MySwal.fire({
+                icon: 'error',
+                title: 'Error al eliminar equipo',
+                text: err.message || 'Ocurrió un error desconocido.',
+            });
+        }
+    };
 
+    const handleView = async (team) => {
+        try {
+                  console.log('Intentando ver equipo:', team.id);
+            const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/teams/${team.id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await res.json();
+        console.log('Datos recibidos:', data);
+            if (!res.ok) {
+                throw new Error(data.message || 'Error al obtener los datos del equipo');
+            }
+
+            setSelectedTeam(data.data);
+            setShowTeamModal(true);
+              console.log('Modal debe mostrarse ahora');
+        } catch (err) {
+            MySwal.fire({
+                icon: 'error',
+                title: 'Error al visualizar equipo',
+                text: err.message || 'Ocurrió un error desconocido.',
+            });
+        }
+    };
 
     const handlePageChange = (newPage) => {
         fetchTeams(newPage);
@@ -191,19 +219,19 @@ const handleSaveEditedTeam = async (updatedTeam) => {
                     </div>
                 )}
 
-                <TeamsTable teams={teams} onEdit={handleEdit} onDelete={handleDelete} />
+                <TeamsTable teams={teams} onEdit={handleEdit} onDelete={handleDelete} onView={handleView} />
 
                 {pagination && (
                     <Pagination pagination={pagination} onPageChange={handlePageChange} />
                 )}
 
                 <div className="mt-4 flex justify-center">
-                <button
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow"
-                    onClick={() => setShowCreateModal(true)}
-                >
-                    Crear Equipo
-                </button>
+                    <button
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow"
+                        onClick={() => setShowCreateModal(true)}
+                    >
+                        Crear Equipo
+                    </button>
                 </div>
             </div>
 
@@ -215,62 +243,70 @@ const handleSaveEditedTeam = async (updatedTeam) => {
                     onSave={handleSaveEditedTeam}
                 />
             )}
-{showCreateModal && (
-  <TeamCreateModal
-    onClose={() => setShowCreateModal(false)}
-    onCreate={async (newTeam) => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/teams`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(newTeam),
-        });
 
-        const data = await res.json();
+            {/* Modal de creación */}
+            {showCreateModal && (
+                <TeamCreateModal
+                    onClose={() => setShowCreateModal(false)}
+                    onCreate={async (newTeam) => {
+                        try {
+                            const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/teams`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Accept': 'application/json',
+                                    Authorization: `Bearer ${token}`,
+                                },
+                                body: JSON.stringify(newTeam),
+                            });
 
-        if (!res.ok) {
-          if (res.status === 422 && data.errors) {
-            const errorMessages = Object.values(data.errors).flat().join('\n');
-            return MySwal.fire({
-              icon: 'error',
-              title: 'Error de validación',
-              text: errorMessages,
-            });
-          }
-          throw new Error(data.message || 'Error al crear el equipo');
-        }
+                            const data = await res.json();
 
-        // Añadir el nuevo equipo a la lista y cache
-        setTeams((prev) => {
-          const updated = [data.data || data, ...prev];
-          
-          return updated;
-        });
+                            if (!res.ok) {
+                                if (res.status === 422 && data.errors) {
+                                    const errorMessages = Object.values(data.errors).flat().join('\n');
+                                    return MySwal.fire({
+                                        icon: 'error',
+                                        title: 'Error de validación',
+                                        text: errorMessages,
+                                    });
+                                }
+                                throw new Error(data.message || 'Error al crear el equipo');
+                            }
 
-        setShowCreateModal(false);
+                            setTeams((prev) => [data.data || data, ...prev]);
+                            setShowCreateModal(false);
 
-        MySwal.fire({
-          icon: 'success',
-          title: 'Equipo creado',
-          text: `El equipo "${newTeam.name}" se creó correctamente.`,
-          timer: 2000,
-          showConfirmButton: false,
-        });
-      } catch (err) {
-        MySwal.fire({
-          icon: 'error',
-          title: 'Error al crear equipo',
-          text: err.message,
-        });
-      }
-    }}
-  />
-)}
+                            MySwal.fire({
+                                icon: 'success',
+                                title: 'Equipo creado',
+                                text: `El equipo "${newTeam.name}" se creó correctamente.`,
+                                timer: 2000,
+                                showConfirmButton: false,
+                            });
+                        } catch (err) {
+                            MySwal.fire({
+                                icon: 'error',
+                                title: 'Error al crear equipo',
+                                text: err.message,
+                            });
+                        }
+                    }}
+                />
+            )}
 
+            {/* Modal de visualización */}
+            {showTeamModal && selectedTeam && (
+                <TeamViewModal
+        isOpen={showTeamModal}
+
+        team={selectedTeam}
+                    onClose={() => {
+                        setSelectedTeam(null);
+                        setShowTeamModal(false);
+                    }}
+                />
+            )}
         </>
     );
 }

@@ -1,8 +1,10 @@
 import React from 'react';
 import { BiPencil } from 'react-icons/bi';
 import { FaTrash } from 'react-icons/fa';
+import { FaSearch } from 'react-icons/fa'; 
 
-export default function TeamsTable({ teams, onEdit, onDelete }) {
+export default function TeamsTable({ teams, onEdit, onDelete, onView }) {
+
     if (!teams || teams.length === 0) {
         return (
             <div className="bg-blue-100 text-blue-700 p-6 rounded-md shadow-md text-center max-w-4xl mx-auto mt-10">
@@ -42,6 +44,13 @@ export default function TeamsTable({ teams, onEdit, onDelete }) {
                                 <td className="py-2 px-4 truncate max-w-[200px]">{team.team_value}</td>
                                 <td className="py-2 px-4 truncate max-w-[150px]">{createdDate}</td>
                                 <td className="py-2 px-4 flex space-x-2 justify-center">
+                                    <button
+                                        onClick={() => onView(team)}
+                                        className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md shadow-sm transition"
+                                    >
+                                        <FaSearch size={16} />
+                                        Visualizar
+                                    </button>
                                     <button
                                         onClick={() => onEdit(team)}
                                         className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md shadow-sm transition"
