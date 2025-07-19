@@ -26,9 +26,9 @@ export default function PlayersTable({ players, onEdit, onDelete, showActions = 
         <th className="py-2 px-4 text-left w-[80px]">Agilidad</th>
         <th className="py-2 px-4 text-left w-[80px]">Pase</th>
         <th className="py-2 px-4 text-left w-[80px]">Armadura</th>
-        <th className="py-2 px-4 text-left w-[130] ">Costo</th>
+        <th className="py-2 px-4 text-left w-[80px]">Costo</th>
         {showActions && 
-        <th className="py-2 px-4 text-center w-[140px]">Acciones</th>
+        <th className="py-2 px-4 text-center w-[80px]">Acciones</th>
 }
       </tr>
     </thead>
@@ -66,7 +66,7 @@ export default function PlayersTable({ players, onEdit, onDelete, showActions = 
               Editar
             </button>
             <button
-              onClick={() => onDelete(player)}
+              onClick={() => onDelete(player.id)}
               className="flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md shadow-sm transition"
               title="Eliminar jugador"
             >

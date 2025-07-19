@@ -1,29 +1,24 @@
 import React, { useEffect, useState } from 'react';
+import Swal from 'sweetalert2';
 import { useAuth } from '../utils/AuthContext.jsx';
 import LoadingOverlay from '../components/LoadingOverlay.jsx';
 import PlayersTable from '../components/PlayersTable.jsx';
 import PlayerEditModal from '../components/PlayerEditModal.jsx';
-import usePlayers from '../hooks/usePlayers.jsx';
 
 export default function Players() {
   const { token } = useAuth();
 
   const [teams, setTeams] = useState([]);
   const [selectedTeamId, setSelectedTeamId] = useState('');
-  const [selectedTeam, setSelectedTeam] = useState(null); // Guardamos equipo completo con jugadores
+  const [selectedTeam, setSelectedTeam] = useState(null); // equipo con jugadores
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Pasamos selectedTeam y setSelectedTeam al hook para gestión centralizada
-  const {
-    playerToEdit,
-    isPlayerEditOpen,
-    handleEditPlayer,
-    handleClosePlayerEdit,
-    handleSavePlayer,
-    handleDeletePlayer,
-  } = usePlayers(selectedTeam, setSelectedTeam);
+  // Para editar jugador
+  const [playerToEdit, setPlayerToEdit] = useState(null);
+  const [isPlayerEditOpen, setIsPlayerEditOpen] = useState(false);
 
+  // Carga lista equipos
   useEffect(() => {
     if (!token) return;
 
@@ -53,6 +48,7 @@ export default function Players() {
     fetchTeams();
   }, [token]);
 
+  // Carga equipo con jugadores al seleccionar
   useEffect(() => {
     if (!token || !selectedTeamId) {
       setSelectedTeam(null);
@@ -84,6 +80,127 @@ export default function Players() {
 
     fetchTeamWithPlayers();
   }, [token, selectedTeamId]);
+
+  // Abrir modal editar jugador
+  const handleEditPlayer = (player) => {
+    setPlayerToEdit(player);
+    setIsPlayerEditOpen(true);
+  };
+
+  // Cerrar modal editar jugador
+  const handleClosePlayerEdit = () => {
+    setPlayerToEdit(null);
+    setIsPlayerEditOpen(false);
+  };
+
+  // Guardar jugador editado o nuevo
+  const handleSavePlayer = async (playerData) => {
+    const method = playerToEdit ? 'PUT' : 'POST';
+    const url = playerToEdit
+      ? `${import.meta.env.VITE_API_BASE_URL}/api/players/${playerToEdit.id}`
+      : `${import.meta.env.VITE_API_BASE_URL}/api/players`;
+
+    try {
+      // Confirmar con SweetAlert antes de guardar
+      const { isConfirmed } = await Swal.fire({
+        title: '¿Confirmas guardar los cambios?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, guardar',
+        cancelButtonText: 'Cancelar',
+      });
+
+      if (!isConfirmed) return;
+
+      const res = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(playerData),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Error al guardar el jugador');
+      }
+
+      const data = await res.json();
+      const updatedPlayer = data.player;
+
+      // Actualizar solo el jugador en selectedTeam.team_players
+      setSelectedTeam(prev => {
+        if (!prev) return prev;
+        const updatedPlayers = prev.team_players.map(p =>
+          p.id === updatedPlayer.id ? { ...p, ...updatedPlayer } : p
+        );
+        return { ...prev, team_players: updatedPlayers };
+      });
+
+      await Swal.fire({
+        title: 'Jugador guardado',
+        icon: 'success',
+        timer: 1500,
+        showConfirmButton: false,
+      });
+
+      handleClosePlayerEdit();
+    } catch (error) {
+      Swal.fire({
+        title: 'Error',
+        text: error.message,
+        icon: 'error',
+      });
+    }
+  };
+
+  // Borrar jugador con confirmación SweetAlert
+  const handleDeletePlayer = async (playerId) => {
+    const result = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'No podrás revertir esta acción',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/players/${playerId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Error al eliminar el jugador');
+      }
+
+      setSelectedTeam(prev => {
+        if (!prev) return prev;
+        const filteredPlayers = prev.team_players.filter(p => p.id !== playerId);
+        return { ...prev, team_players: filteredPlayers };
+      });
+
+      Swal.fire({
+        title: 'Jugador eliminado',
+        icon: 'success',
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    } catch (error) {
+      Swal.fire({
+        title: 'Error',
+        text: error.message,
+        icon: 'error',
+      });
+    }
+  };
 
   return (
     <>

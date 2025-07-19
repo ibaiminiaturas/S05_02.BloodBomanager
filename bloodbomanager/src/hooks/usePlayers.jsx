@@ -38,18 +38,17 @@ export default function usePlayers(players, setPlayers) {
         throw new Error(errorData.message || 'Error al guardar el jugador');
       }
 
-     const data = await res.json();
+      const data = await res.json();
+      const updatedPlayer = data.player;
 
-    const updatedPlayer = data.player;
-
-    // Actualizar solo el jugador dentro del array players
-    setPlayers(prevPlayers => {
-      if (!Array.isArray(prevPlayers)) return [updatedPlayer];
-      return prevPlayers.map(p => (p.id === updatedPlayer.id ? { ...p, ...updatedPlayer } : p));
-    });
-
-
-     
+      setPlayers(prevPlayers => {
+        if (!Array.isArray(prevPlayers)) return [updatedPlayer];
+        return prevPlayers.map(p =>
+          p.id === updatedPlayer.id
+            ? { ...p, ...updatedPlayer }
+            : p
+        );
+      });
 
       handleClosePlayerEdit();
     } catch (error) {
@@ -71,7 +70,7 @@ export default function usePlayers(players, setPlayers) {
         throw new Error(errorData.message || 'Error al eliminar el jugador');
       }
 
-      setPlayers(players.filter(p => p.id !== playerId));
+      setPlayers(prevPlayers => prevPlayers.filter(p => p.id !== playerId));
     } catch (error) {
       alert(error.message);
     }
