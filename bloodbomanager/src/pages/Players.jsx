@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import Swal from 'sweetalert2';
 import { useAuth } from '../utils/AuthContext.jsx';
 import LoadingOverlay from '../components/LoadingOverlay.jsx';
@@ -12,6 +12,7 @@ export default function Players() {
   const [teams, setTeams] = useState([]);
   const [selectedTeamId, setSelectedTeamId] = useState('');
   const [selectedTeam, setSelectedTeam] = useState(null); // equipo con jugadores
+  const [rosters, setRosters] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -52,6 +53,36 @@ export default function Players() {
     fetchTeams();
   }, [token]);
 
+  // Carga lista rosters
+  useEffect(() => {
+    if (!token) return;
+
+    const fetchRosters = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/rosters`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error('Error al obtener los rosters');
+        const data = await res.json();
+
+        if (data?.data && Array.isArray(data.data)) {
+          setRosters(data.data);
+          setError('');
+        } else {
+          setRosters([]);
+          setError('Respuesta inesperada de la API para rosters');
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRosters();
+  }, [token]);
+
   // Carga equipo con jugadores al seleccionar
   useEffect(() => {
     if (!token || !selectedTeamId) {
@@ -84,6 +115,13 @@ export default function Players() {
 
     fetchTeamWithPlayers();
   }, [token, selectedTeamId]);
+
+  // Obtenemos los player_types para el roster del equipo seleccionado
+  const playerTypesForSelectedTeam = useMemo(() => {
+    if (!selectedTeam || !rosters.length) return [];
+    const roster = rosters.find(r => r.id === selectedTeam.roster_id);
+    return roster?.player_types || [];
+  }, [selectedTeam, rosters]);
 
   // Abrir modal editar jugador
   const handleEditPlayer = (player) => {
@@ -132,20 +170,27 @@ export default function Players() {
 
       setSelectedTeam(prev => {
         if (!prev) return prev;
-        const updatedPlayers = prev.team_players.map(p =>
-          p.id === updatedPlayer.id ? { ...p, ...updatedPlayer } : p
-        );
+        // Si es edición, actualizamos jugador, si es creación añadimos nuevo
+        let updatedPlayers;
+        if (playerToEdit) {
+          updatedPlayers = prev.team_players.map(p =>
+            p.id === updatedPlayer.id ? { ...p, ...updatedPlayer } : p
+          );
+        } else {
+          updatedPlayers = [...prev.team_players, updatedPlayer];
+        }
         return { ...prev, team_players: updatedPlayers };
       });
 
       await Swal.fire({
-        title: 'Jugador guardado',
+        title: playerToEdit ? 'Jugador guardado' : 'Jugador creado',
         icon: 'success',
         timer: 1500,
         showConfirmButton: false,
       });
 
       handleClosePlayerEdit();
+      setIsAddPlayerOpen(false);
     } catch (error) {
       Swal.fire({
         title: 'Error',
@@ -248,71 +293,25 @@ export default function Players() {
         </>
       )}
 
+      {/* Modal para editar jugador, ahora con playerTypes */}
       {isPlayerEditOpen && playerToEdit && (
         <PlayerEditModal
           isOpen={isPlayerEditOpen}
           player={playerToEdit}
           onClose={handleClosePlayerEdit}
           onSave={handleSavePlayer}
+          playerTypes={playerTypesForSelectedTeam}
         />
       )}
 
+      {/* Modal para crear jugador, también con playerTypes */}
       {isAddPlayerOpen && (
         <PlayerFormModal
           isOpen={isAddPlayerOpen}
           onClose={() => setIsAddPlayerOpen(false)}
-          onSave={async (newPlayerData) => {
-            try {
-              const { isConfirmed } = await Swal.fire({
-                title: '¿Confirmas añadir este jugador?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Sí, añadir',
-                cancelButtonText: 'Cancelar',
-              });
-
-              if (!isConfirmed) return;
-
-              const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/players`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                  ...newPlayerData,
-                  team_id: selectedTeam.id,
-                }),
-              });
-
-              if (!res.ok) {
-                const errorData = await res.json();
-                throw new Error(errorData.message || 'Error al crear jugador');
-              }
-
-              const data = await res.json();
-
-              setSelectedTeam(prev => ({
-                ...prev,
-                team_players: [...prev.team_players, data.player],
-              }));
-
-              Swal.fire({
-                title: 'Jugador creado',
-                icon: 'success',
-                timer: 1500,
-                showConfirmButton: false,
-              });
-
-              setIsAddPlayerOpen(false);
-            } catch (error) {
-              Swal.fire({
-                title: 'Error',
-                text: error.message,
-                icon: 'error',
-              });
-            }
-          }}
+          onSave={handleSavePlayer}
+          playerTypes={playerTypesForSelectedTeam}
+          teamId={selectedTeam?.id}
         />
       )}
     </>

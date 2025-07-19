@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from 'react';
 
-export default function PlayerFormModal({ isOpen, onClose, onSubmit, initialData = {} }) {
+export default function PlayerFormModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  initialData = {},
+  playerTypes = [],   // Nuevo prop para los tipos de jugador
+}) {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
   const [injuries, setInjuries] = useState('');
   const [spp, setSpp] = useState('');
+  const [playerTypeId, setPlayerTypeId] = useState(''); // Estado para el tipo de jugador
 
   useEffect(() => {
     if (initialData) {
@@ -12,19 +19,20 @@ export default function PlayerFormModal({ isOpen, onClose, onSubmit, initialData
       setNumber(initialData.number || '');
       setInjuries(initialData.injuries || '');
       setSpp(initialData.spp || '');
+      setPlayerTypeId(initialData.player_type_id || ''); // precarga si existe
     }
   }, [initialData]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({ name, number, injuries, spp });
+    onSubmit({ name, number, injuries, spp, player_type_id: playerTypeId });
     onClose();
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0  flex justify-center items-center z-50">
+    <div className="fixed inset-0 flex justify-center items-center z-50 ">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
         <h2 className="text-xl font-semibold mb-4 text-blue-700">
           {initialData?.id ? 'Editar jugador' : 'Nuevo jugador'}
@@ -69,6 +77,25 @@ export default function PlayerFormModal({ isOpen, onClose, onSubmit, initialData
               value={spp}
               onChange={(e) => setSpp(e.target.value)}
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Tipo de jugador</label>
+            <select
+              className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={playerTypeId}
+              onChange={(e) => setPlayerTypeId(e.target.value)}
+              required
+            >
+              <option value="" disabled>
+                -- Elige un tipo --
+              </option>
+              {playerTypes.map((pt) => (
+                <option key={pt.id} value={pt.id}>
+                  {pt.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
