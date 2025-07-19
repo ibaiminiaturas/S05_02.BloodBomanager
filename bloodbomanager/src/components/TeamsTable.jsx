@@ -50,7 +50,7 @@ export default function TeamsTable({ teams, onEdit, onDelete, onView }) {
                                         className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md shadow-sm transition"
                                     >
                                         <FaSearch size={16} />
-                                        Visualizar
+                                        Alineación
                                     </button>
                                     <button
                                         onClick={() => onEdit(team)}

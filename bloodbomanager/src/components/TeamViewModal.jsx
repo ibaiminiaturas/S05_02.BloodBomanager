@@ -15,8 +15,8 @@ export default function TeamViewModal({ isOpen, onClose, team, onEditPlayer, onD
 
       {/* Contenedor modal */}
       <div
-        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
-                   bg-white rounded-md shadow-lg p-6 z-50 max-w-fit max-h-[80vh] overflow-auto"
+  className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
+             bg-blue-200 rounded-md shadow-lg p-6 z-50 max-w-fit max-h-[80vh] overflow-auto"
         onClick={e => e.stopPropagation()}
       >
         {/* Botón cerrar */}

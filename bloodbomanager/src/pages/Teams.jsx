@@ -298,7 +298,7 @@ export default function Teams() {
 
     const handleView = async (team) => {
         try {
-            console.log('Intentando ver equipo:', team.id);
+
             const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/teams/${team.id}`, {
                 method: 'GET',
                 headers: {
@@ -307,14 +307,13 @@ export default function Teams() {
             });
 
             const data = await res.json();
-            console.log('Datos recibidos:', data);
+
             if (!res.ok) {
                 throw new Error(data.message || 'Error al obtener los datos del equipo');
             }
 
             setSelectedTeam(data.data);
             setShowTeamModal(true);
-            console.log('Modal debe mostrarse ahora');
         } catch (err) {
             MySwal.fire({
                 icon: 'error',
