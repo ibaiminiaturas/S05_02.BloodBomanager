@@ -37,6 +37,7 @@ export default function TeamViewModal({ team, onClose, onEditPlayer, onDeletePla
           players={team.team_players}
           onEdit={onEditPlayer}
           onDelete={onDeletePlayer}
+            showActions={false}
         />
       </div>
     </>

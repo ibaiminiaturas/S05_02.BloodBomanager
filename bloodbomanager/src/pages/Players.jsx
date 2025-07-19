@@ -10,11 +10,11 @@ export default function Players() {
 
   const [teams, setTeams] = useState([]);
   const [selectedTeamId, setSelectedTeamId] = useState('');
-  const [players, setPlayers] = useState([]);
+  const [selectedTeam, setSelectedTeam] = useState(null); // Guardamos equipo completo con jugadores
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Aquí pasamos players y setPlayers al hook para que gestione la edición/eliminación
+  // Pasamos selectedTeam y setSelectedTeam al hook para gestión centralizada
   const {
     playerToEdit,
     isPlayerEditOpen,
@@ -22,7 +22,7 @@ export default function Players() {
     handleClosePlayerEdit,
     handleSavePlayer,
     handleDeletePlayer,
-  } = usePlayers(players, setPlayers);
+  } = usePlayers(selectedTeam, setSelectedTeam);
 
   useEffect(() => {
     if (!token) return;
@@ -55,24 +55,25 @@ export default function Players() {
 
   useEffect(() => {
     if (!token || !selectedTeamId) {
-      setPlayers([]);
+      setSelectedTeam(null);
       return;
     }
 
-    const fetchPlayersByTeam = async () => {
+    const fetchTeamWithPlayers = async () => {
       setLoading(true);
       try {
         const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/teams/${selectedTeamId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (!res.ok) throw new Error('Error al obtener los jugadores');
+        if (!res.ok) throw new Error('Error al obtener el equipo y jugadores');
         const data = await res.json();
-        if (data?.data?.team_players && Array.isArray(data.data.team_players)) {
-          setPlayers(data.data.team_players);
+
+        if (data?.data && data.data.team_players && Array.isArray(data.data.team_players)) {
+          setSelectedTeam(data.data);
           setError('');
         } else {
-          setPlayers([]);
-          setError('Respuesta inesperada de la API para jugadores');
+          setSelectedTeam(null);
+          setError('Respuesta inesperada de la API para equipo y jugadores');
         }
       } catch (err) {
         setError(err.message);
@@ -81,7 +82,7 @@ export default function Players() {
       }
     };
 
-    fetchPlayersByTeam();
+    fetchTeamWithPlayers();
   }, [token, selectedTeamId]);
 
   return (
@@ -110,25 +111,23 @@ export default function Players() {
         </div>
       )}
 
-      {selectedTeamId && !loading && !error && (
+      {selectedTeam && !loading && !error && (
         <PlayersTable
-          players={players}
+          players={selectedTeam.team_players}
           onEdit={handleEditPlayer}
           onDelete={handleDeletePlayer}
+          showActions={true}
         />
       )}
 
-      {/* Aquí podrías usar playerToEdit e isPlayerEditOpen para renderizar un modal o formulario de edición */}
-      {
-        isPlayerEditOpen && (
-          <PlayerEditModal
-            isOpen={isPlayerEditOpen}
-            player={playerToEdit}
-            onClose={handleClosePlayerEdit}
-            onSave={handleSavePlayer}
-          />
-        )
-      }
+      {isPlayerEditOpen && playerToEdit && (
+        <PlayerEditModal
+          isOpen={isPlayerEditOpen}
+          player={playerToEdit}
+          onClose={handleClosePlayerEdit}
+          onSave={handleSavePlayer}
+        />
+      )}
     </>
   );
 }

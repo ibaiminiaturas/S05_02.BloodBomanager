@@ -2,7 +2,7 @@ import React from 'react';
 import { BiPencil } from 'react-icons/bi';
 import { FaTrash } from 'react-icons/fa';
 
-export default function PlayersTable({ players, onEdit, onDelete }) {
+export default function PlayersTable({ players, onEdit, onDelete, showActions = false }) {
   if (!players || players.length === 0) {
     return (
       <div className="bg-blue-100 text-blue-700 p-6 rounded-md shadow-md text-center max-w-4xl mx-auto mt-10">
@@ -26,8 +26,10 @@ export default function PlayersTable({ players, onEdit, onDelete }) {
         <th className="py-2 px-4 text-left w-[80px]">Agilidad</th>
         <th className="py-2 px-4 text-left w-[80px]">Pase</th>
         <th className="py-2 px-4 text-left w-[80px]">Armadura</th>
-        <th className="py-2 px-4 text-left w-[90px]">Costo</th>
+        <th className="py-2 px-4 text-left w-[130] ">Costo</th>
+        {showActions && 
         <th className="py-2 px-4 text-center w-[140px]">Acciones</th>
+}
       </tr>
     </thead>
     <tbody>
@@ -50,7 +52,11 @@ export default function PlayersTable({ players, onEdit, onDelete }) {
             {player.player_type?.armor ? `${player.player_type.armor}+` : '—'}
           </td>
           <td className="py-2 px-4 truncate max-w-[90px]">{player.player_type?.cost || '—'}</td>
+             {showActions && (
+              
           <td className="py-2 px-4 flex justify-center space-x-2">
+
+            
             <button
               onClick={() => onEdit(player)}
               className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md shadow-sm transition"
@@ -67,7 +73,9 @@ export default function PlayersTable({ players, onEdit, onDelete }) {
               <FaTrash size={18} />
               Eliminar
             </button>
+
           </td>
+                      )}
         </tr>
       ))}
     </tbody>
