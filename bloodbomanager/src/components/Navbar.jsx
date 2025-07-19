@@ -15,6 +15,7 @@ const Navbar = () => {
     { to: '/', label: 'Dashboard', roles: [] },
     { to: '/coaches', label: 'Coaches', roles: ['admin'] },
     { to: '/teams', label: 'Equipos', roles: ['admin', 'coach'] },
+    { to: '/players', label: 'Jugadores', roles: ['admin', 'coach'] },
     { to: '/skills', label: 'Habilidades', roles: ['admin', 'coach'] },
     { to: '/rosters', label: 'Rosters', roles: ['admin', 'coach'] },
 
