@@ -5,34 +5,41 @@ export default function PlayerFormModal({
   onClose,
   onSubmit,
   initialData = {},
-  playerTypes = [],   // Nuevo prop para los tipos de jugador
+  playerTypes = [],
 }) {
   const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+  const [player_number, setNumber] = useState('');
   const [injuries, setInjuries] = useState('');
   const [spp, setSpp] = useState('');
-  const [playerTypeId, setPlayerTypeId] = useState(''); // Estado para el tipo de jugador
+  const [playerTypeId, setPlayerTypeId] = useState('');
 
   useEffect(() => {
-    if (initialData) {
+    if (initialData && initialData.id !== undefined) {
       setName(initialData.name || '');
-      setNumber(initialData.number || '');
+      setNumber(initialData.player_number || '');
       setInjuries(initialData.injuries || '');
       setSpp(initialData.spp || '');
-      setPlayerTypeId(initialData.player_type_id || ''); // precarga si existe
+      setPlayerTypeId(initialData.player_type_id || '');
+    } else if (!initialData.id) {
+      // Si no hay initialData.id (modal nuevo), limpia los campos
+      setName('');
+      setNumber('');
+      setInjuries('');
+      setSpp('');
+      setPlayerTypeId('');
     }
-  }, [initialData]);
+  }, [initialData.id]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({ name, number, injuries, spp, player_type_id: playerTypeId });
+    onSubmit({ name, player_number, injuries, spp, player_type_id: playerTypeId });
     onClose();
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex justify-center items-center z-50 ">
+    <div className="fixed inset-0 flex justify-center items-center z-50">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
         <h2 className="text-xl font-semibold mb-4 text-blue-700">
           {initialData?.id ? 'Editar jugador' : 'Nuevo jugador'}
@@ -54,7 +61,7 @@ export default function PlayerFormModal({
             <input
               type="number"
               className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={number}
+              value={player_number}
               onChange={(e) => setNumber(e.target.value)}
             />
           </div>

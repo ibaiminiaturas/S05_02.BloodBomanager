@@ -134,11 +134,13 @@ export default function Players() {
     setIsPlayerEditOpen(false);
   };
 
+  // Guardar jugador (editar o crear)
   const handleSavePlayer = async (playerData) => {
+    
     const method = playerToEdit ? 'PUT' : 'POST';
     const url = playerToEdit
       ? `${import.meta.env.VITE_API_BASE_URL}/api/players/${playerToEdit.id}`
-      : `${import.meta.env.VITE_API_BASE_URL}/api/players`;
+      : `${import.meta.env.VITE_API_BASE_URL}/api/teams/${teamId}/players`;
 
     try {
       const { isConfirmed } = await Swal.fire({
@@ -170,19 +172,20 @@ export default function Players() {
 
       setSelectedTeam(prev => {
         if (!prev) return prev;
-        // Si es edición, actualizamos jugador, si es creación añadimos nuevo
         let updatedPlayers;
         if (playerToEdit) {
+          // Edición
           updatedPlayers = prev.team_players.map(p =>
             p.id === updatedPlayer.id ? { ...p, ...updatedPlayer } : p
           );
         } else {
+          // Creación
           updatedPlayers = [...prev.team_players, updatedPlayer];
         }
         return { ...prev, team_players: updatedPlayers };
       });
 
-      await Swal.fire({
+      Swal.fire({
         title: playerToEdit ? 'Jugador guardado' : 'Jugador creado',
         icon: 'success',
         timer: 1500,
@@ -200,6 +203,7 @@ export default function Players() {
     }
   };
 
+  // Eliminar jugador
   const handleDeletePlayer = async (playerId) => {
     const result = await Swal.fire({
       title: '¿Estás seguro?',
@@ -293,7 +297,7 @@ export default function Players() {
         </>
       )}
 
-      {/* Modal para editar jugador, ahora con playerTypes */}
+      {/* Modal para editar jugador */}
       {isPlayerEditOpen && playerToEdit && (
         <PlayerEditModal
           isOpen={isPlayerEditOpen}
@@ -304,14 +308,69 @@ export default function Players() {
         />
       )}
 
-      {/* Modal para crear jugador, también con playerTypes */}
+      {/* Modal para crear jugador */}
       {isAddPlayerOpen && (
         <PlayerFormModal
           isOpen={isAddPlayerOpen}
           onClose={() => setIsAddPlayerOpen(false)}
-          onSave={handleSavePlayer}
+          onSubmit={async (newPlayerData) => {
+            try {
+              const { isConfirmed } = await Swal.fire({
+                title: '¿Confirmas añadir este jugador?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, añadir',
+                cancelButtonText: 'Cancelar',
+              });
+              if (!isConfirmed) return;
+
+              // Incluimos el team_id para asignarlo
+              newPlayerData.team_id = selectedTeamId;
+                console.log(newPlayerData);
+                const teamId = selectedTeam?.id;
+              const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/teams/${teamId}/players`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json',
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(newPlayerData),
+              });
+
+              if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.message || 'Error al añadir jugador');
+              }
+
+              const data = await res.json();
+              const addedPlayer = data.player;
+
+              setSelectedTeam(prev => {
+                if (!prev) return prev;
+                return {
+                  ...prev,
+                  team_players: [...prev.team_players, addedPlayer],
+                };
+              });
+
+              Swal.fire({
+                title: 'Jugador añadido',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false,
+              });
+
+              setIsAddPlayerOpen(false);
+            } catch (error) {
+              Swal.fire({
+                title: 'Error',
+                text: error.message,
+                icon: 'error',
+              });
+            }
+          }}
           playerTypes={playerTypesForSelectedTeam}
-          teamId={selectedTeam?.id}
         />
       )}
     </>
