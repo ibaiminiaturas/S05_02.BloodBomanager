@@ -4,6 +4,7 @@ import { FaTrash } from 'react-icons/fa';
 import { FaPlus } from 'react-icons/fa6'; // icono para añadir
 
 export default function PlayersTable({ players, onEdit, onDelete, onAdd, showActions = false }) {
+  console.log('players en PlayersTable:', players);  
   if (!players || players.length === 0) {
     return (
       <div className="bg-blue-100 text-blue-700 p-6 rounded-md shadow-md text-center max-w-4xl mx-auto mt-10">

@@ -33,7 +33,7 @@ export default function PlayerFormModal({
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit({ name, player_number, injuries, spp, player_type_id: playerTypeId });
-    onClose();
+
   };
 
   if (!isOpen) return null;

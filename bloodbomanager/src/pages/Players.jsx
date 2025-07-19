@@ -134,6 +134,7 @@ export default function Players() {
 
   // Guardar jugador (editar o crear)
 
+// Guardar jugador (editar o crear)
 const handleSavePlayer = async (playerData) => {
   const method = playerToEdit ? 'PUT' : 'POST';
   const url = playerToEdit
@@ -165,18 +166,16 @@ const handleSavePlayer = async (playerData) => {
       throw new Error(errorData.message || 'Error al guardar el jugador');
     }
 
-    // ✅ Refetch del equipo para obtener los datos actualizados
-    const teamRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/teams/${selectedTeam.id}`, {
+    // 💡 VOLVER A FETCHEAR EL EQUIPO
+    const refreshed = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/teams/${selectedTeam.id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    if (!teamRes.ok) {
-      throw new Error('No se pudo actualizar el equipo después de guardar el jugador');
-    }
+    if (!refreshed.ok) throw new Error('Error al recargar el equipo');
 
-    const teamData = await teamRes.json();
+    const teamData = await refreshed.json();
     setSelectedTeam(teamData.data);
 
     Swal.fire({
@@ -273,6 +272,7 @@ const handleSavePlayer = async (playerData) => {
 
       {selectedTeam && !loading && !error && (
         <>
+        
           <PlayersTable
             players={selectedTeam.team_players}
             onEdit={handleEditPlayer}
@@ -301,68 +301,70 @@ const handleSavePlayer = async (playerData) => {
         />
       )}
 
-      {isAddPlayerOpen && (
-        <PlayerFormModal
-          isOpen={isAddPlayerOpen}
-          onClose={() => setIsAddPlayerOpen(false)}
-          onSubmit={async (newPlayerData) => {
-            try {
-              const { isConfirmed } = await Swal.fire({
-                title: '¿Confirmas añadir este jugador?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Sí, añadir',
-                cancelButtonText: 'Cancelar',
-              });
-              if (!isConfirmed) return;
+{isAddPlayerOpen && (
+  <PlayerFormModal
+    isOpen={isAddPlayerOpen}
+    onClose={() => setIsAddPlayerOpen(false)}
+    onSubmit={async (newPlayerData) => {
+      try {
+        const { isConfirmed } = await Swal.fire({
+          title: '¿Confirmas añadir este jugador?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, añadir',
+          cancelButtonText: 'Cancelar',
+        });
+        if (!isConfirmed) return;
 
-              newPlayerData.team_id = selectedTeamId;
-              const teamId = selectedTeam?.id;
-              const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/teams/${teamId}/players`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Accept': 'application/json',
-                  Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(newPlayerData),
-              });
+        newPlayerData.team_id = selectedTeamId;
+        const teamId = selectedTeam?.id;
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/teams/${teamId}/players`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(newPlayerData),
+        });
 
-              if (!res.ok) {
-                const errorData = await res.json();
-                throw new Error(errorData.message || 'Error al añadir jugador');
-              }
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.message || 'Error al añadir jugador');
+        }
 
-              const data = await res.json();
-              const addedPlayer = data.player;
+        // En vez de añadir directamente al array, recargamos el equipo entero:
+        const refreshed = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/teams/${teamId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-              setSelectedTeam(prev => {
-                if (!prev) return prev;
-                return {
-                  ...prev,
-                  team_players: [...prev.team_players, addedPlayer],
-                };
-              });
+        if (!refreshed.ok) throw new Error('Error al recargar el equipo');
 
-              Swal.fire({
-                title: 'Jugador añadido',
-                icon: 'success',
-                timer: 1500,
-                showConfirmButton: false,
-              });
+        const teamData = await refreshed.json();
+        setSelectedTeam(teamData.data);
 
-              setIsAddPlayerOpen(false);
-            } catch (error) {
-              Swal.fire({
-                title: 'Error',
-                text: error.message,
-                icon: 'error',
-              });
-            }
-          }}
-          playerTypes={playerTypesForSelectedTeam}
-        />
-      )}
+        Swal.fire({
+          title: 'Jugador añadido',
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false,
+        });
+
+        setIsAddPlayerOpen(false);
+      } catch (error) {
+        Swal.fire({
+          title: 'Error',
+          text: error.message,
+          icon: 'error',
+        });
+      }
+    }}
+    playerTypes={playerTypesForSelectedTeam}
+  />
+)}
+
     </>
   );
 }
