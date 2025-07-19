@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }) => {
       const data = await res.json();
       setUser(data.user);
     } catch (error) {
-      console.error('Error fetching user:', error);
+      
       setToken(null);
       setUser(null);
       localStorage.removeItem('token');

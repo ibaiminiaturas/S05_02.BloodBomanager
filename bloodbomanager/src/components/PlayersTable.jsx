@@ -4,7 +4,7 @@ import { FaTrash } from 'react-icons/fa';
 import { FaPlus } from 'react-icons/fa6'; // icono para añadir
 
 export default function PlayersTable({ players, onEdit, onDelete, onAdd, showActions = false }) {
-  console.log('players en PlayersTable:', players);  
+  
   if (!players || players.length === 0) {
     return (
       <div className="bg-blue-100 text-blue-700 p-6 rounded-md shadow-md text-center max-w-4xl mx-auto mt-10">
@@ -27,6 +27,7 @@ export default function PlayersTable({ players, onEdit, onDelete, onAdd, showAct
         <thead>
           <tr className="bg-blue-600 text-white">
             <th className="py-2 px-4 text-left w-[220px]">Nombre</th>
+            <th className="py-2 px-4 text-left w-[80px]">Numero</th>
             <th className="py-2 px-4 text-left w-[120px]">Experiencia (SPP)</th>
             <th className="py-2 px-4 text-left w-[150px]">Injuries</th>
             <th className="py-2 px-4 text-left w-[150px]">Posición</th>
@@ -44,6 +45,7 @@ export default function PlayersTable({ players, onEdit, onDelete, onAdd, showAct
           {players.map((player, i) => (
             <tr key={player.id} className={i % 2 === 0 ? 'bg-blue-50' : 'bg-blue-100'}>
               <td className="py-2 px-4 truncate max-w-[220px]">{player.name}</td>
+              <td className="py-2 px-4 truncate max-w-[80px]">{player.player_number}</td>
               <td className="py-2 px-4 truncate max-w-[120px]">{player.spp}</td>
               <td className="py-2 px-4 truncate max-w-[150px]">{player.injuries || 'Ninguna'}</td>
               <td className="py-2 px-4 truncate max-w-[150px]">{player.player_type?.name || '—'}</td>

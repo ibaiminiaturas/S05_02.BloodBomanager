@@ -17,7 +17,7 @@ export default function Status() {
         setStatus(data.message);
       })
       .catch((err) => {
-        console.error(err);
+        
         setError("Error de conexión");
         setStatus(""); // Para detener el loading
       });
