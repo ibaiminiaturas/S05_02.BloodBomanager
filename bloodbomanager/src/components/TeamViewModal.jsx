@@ -1,5 +1,5 @@
 import React from 'react';
-import PlayerTable from './PlayerTable';
+import PlayerTable from './PlayersTable';
 
 export default function TeamViewModal({ team, onClose, onEditPlayer, onDeletePlayer }) {
   if (!team) return null;
@@ -35,8 +35,8 @@ export default function TeamViewModal({ team, onClose, onEditPlayer, onDeletePla
 
         <PlayerTable
           players={team.team_players}
-          onEditPlayer={onEditPlayer}
-          onDeletePlayer={onDeletePlayer}
+          onEdit={onEditPlayer}
+          onDelete={onDeletePlayer}
         />
       </div>
     </>
