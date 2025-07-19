@@ -1,32 +1,62 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../utils/AuthContext';
-import { FaRunning } from 'react-icons/fa';
-import PlayerTable from '../components/PlayerTable';
-import Pagination from '../components/Pagination.jsx';
+import { useAuth } from '../utils/AuthContext.jsx';
 import LoadingOverlay from '../components/LoadingOverlay.jsx';
-import MySwal from '../utils/MySwal.js';
+import PlayersTable from '../components/PlayersTable.jsx'; // tabla que quieres mostrar en vez del modal
 
-export default function Players() {
+export default function Teams() {
   const { token } = useAuth();
 
-  const [players, setPlayers] = useState([]);
-  const [pagination, setPagination] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [teams, setTeams] = useState([]);
+  const [selectedTeamId, setSelectedTeamId] = useState('');
+  const [players, setPlayers] = useState([]); // estado para jugadores
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const fetchPlayers = async (page = 1) => {
+  // Traer equipos
+  const fetchTeams = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/players?page=${page}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/teams`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) throw new Error('Error al obtener los equipos');
+
+      const data = await res.json();
+
+      if (data?.data?.data && Array.isArray(data.data.data)) {
+        setTeams(data.data.data);
+        setError('');
+      } else {
+        setTeams([]);
+        setError('Respuesta inesperada de la API');
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Traer todos los jugadores (asumo que hay un endpoint /api/players)
+  const fetchPlayers = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/players`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!res.ok) throw new Error('Error al obtener los jugadores');
 
       const data = await res.json();
-      setPlayers(data.data.data);
-      setPagination(data.data);
-      setError('');
+
+      if (data?.data && Array.isArray(data.data)) {
+        setPlayers(data.data);
+        setError('');
+      } else {
+        setPlayers([]);
+        setError('Respuesta inesperada de la API para jugadores');
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -35,73 +65,62 @@ export default function Players() {
   };
 
   useEffect(() => {
-    if (token) fetchPlayers();
+    if (token) {
+      fetchTeams();
+      fetchPlayers();
+    }
   }, [token]);
 
-  const handleEditPlayer = (player) => {
-    MySwal.fire({
-      icon: 'info',
-      title: 'Funcionalidad pendiente',
-      text: `Editar jugador: ${player.name}`,
-    });
+  // Cuando cambia el select, solo guardamos el id seleccionado, no abrimos modal
+  const handleTeamChange = (e) => {
+    setSelectedTeamId(e.target.value);
   };
 
-  const handleDeletePlayer = async (player) => {
-    const confirm = await MySwal.fire({
-      icon: 'warning',
-      title: `¿Eliminar a ${player.name}?`,
-      text: 'Esta acción no se puede deshacer.',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar',
-    });
-
-    if (confirm.isConfirmed) {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/players/${player.id}`, {
-          method: 'DELETE',
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) throw new Error('Error al eliminar jugador');
-
-        setPlayers(players.filter(p => p.id !== player.id));
-
-        MySwal.fire({
-          icon: 'success',
-          title: 'Jugador eliminado',
-          text: `${player.name} ha sido eliminado correctamente.`,
-          timer: 2000,
-          showConfirmButton: false,
-        });
-      } catch (err) {
-        MySwal.fire('Error', err.message, 'error');
-      }
-    }
-  };
-
-  const handlePageChange = (newPage) => fetchPlayers(newPage);
+  // Filtramos jugadores que pertenezcan al equipo seleccionado
+  const filteredPlayers = selectedTeamId
+    ? players.filter(player => player.team?.id === parseInt(selectedTeamId))
+    : [];
 
   return (
     <>
-      {/* Título */}
-      <div className="flex items-center mb-6 space-x-3 ml-4">
-        <FaRunning className="text-green-700 w-10 h-10" />
-        <h2 className="text-3xl font-extrabold text-gray-900">Listado de Jugadores</h2>
+      <h2 className="text-3xl font-bold mb-4 ml-4">Listado de Equipos</h2>
+
+      <div className="max-w-md mb-6 ml-4">
+        <select
+          value={selectedTeamId}
+          onChange={handleTeamChange}
+          className="w-full px-4 py-2 bg-blue-50 border border-blue-300 text-blue-800 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500"
+        >
+          <option value="">-- Elige un equipo --</option>
+          {teams.map(team => (
+            <option key={team.id} value={team.id}>
+              {team.name}
+            </option>
+          ))}
+        </select>
       </div>
 
-      <div className={`relative max-w-full ${loading ? 'pointer-events-none blur-[0.5px]' : ''}`}>
-        {loading && <LoadingOverlay fullScreen={false} message="Cargando jugadores..." />}
+      {loading && <LoadingOverlay message="Cargando datos..." fullScreen={false} />}
+      {error && (
+        <div className="bg-red-100 text-red-700 p-4 rounded-md shadow-md max-w-4xl mx-auto mb-4">
+          {error}
+        </div>
+      )}
 
-        <PlayerTable
-          players={players}
-          onEditPlayer={handleEditPlayer}
-          onDeletePlayer={handleDeletePlayer}
+      {/* Renderizamos solo la tabla, sin modal */}
+      {selectedTeamId && (
+        <PlayersTable
+          players={filteredPlayers}
+          onEdit={(player) => {
+            // Aquí pones lógica para editar si tienes
+            console.log('Editar jugador:', player);
+          }}
+          onDelete={(player) => {
+            // Aquí pones lógica para eliminar si tienes
+            console.log('Eliminar jugador:', player);
+          }}
         />
-
-        {pagination && (
-          <Pagination pagination={pagination} onPageChange={handlePageChange} />
-        )}
-      </div>
+      )}
     </>
   );
 }
