@@ -4,6 +4,7 @@ import { useAuth } from '../utils/AuthContext.jsx';
 import LoadingOverlay from '../components/LoadingOverlay.jsx';
 import PlayersTable from '../components/PlayersTable.jsx';
 import PlayerEditModal from '../components/PlayerEditModal.jsx';
+import PlayerFormModal from '../components/PlayerFormModal';
 
 export default function Players() {
   const { token } = useAuth();
@@ -17,6 +18,9 @@ export default function Players() {
   // Para editar jugador
   const [playerToEdit, setPlayerToEdit] = useState(null);
   const [isPlayerEditOpen, setIsPlayerEditOpen] = useState(false);
+
+  // Para añadir jugador
+  const [isAddPlayerOpen, setIsAddPlayerOpen] = useState(false);
 
   // Carga lista equipos
   useEffect(() => {
@@ -87,13 +91,11 @@ export default function Players() {
     setIsPlayerEditOpen(true);
   };
 
-  // Cerrar modal editar jugador
   const handleClosePlayerEdit = () => {
     setPlayerToEdit(null);
     setIsPlayerEditOpen(false);
   };
 
-  // Guardar jugador editado o nuevo
   const handleSavePlayer = async (playerData) => {
     const method = playerToEdit ? 'PUT' : 'POST';
     const url = playerToEdit
@@ -101,7 +103,6 @@ export default function Players() {
       : `${import.meta.env.VITE_API_BASE_URL}/api/players`;
 
     try {
-      // Confirmar con SweetAlert antes de guardar
       const { isConfirmed } = await Swal.fire({
         title: '¿Confirmas guardar los cambios?',
         icon: 'question',
@@ -129,7 +130,6 @@ export default function Players() {
       const data = await res.json();
       const updatedPlayer = data.player;
 
-      // Actualizar solo el jugador en selectedTeam.team_players
       setSelectedTeam(prev => {
         if (!prev) return prev;
         const updatedPlayers = prev.team_players.map(p =>
@@ -155,7 +155,6 @@ export default function Players() {
     }
   };
 
-  // Borrar jugador con confirmación SweetAlert
   const handleDeletePlayer = async (playerId) => {
     const result = await Swal.fire({
       title: '¿Estás seguro?',
@@ -229,12 +228,24 @@ export default function Players() {
       )}
 
       {selectedTeam && !loading && !error && (
-        <PlayersTable
-          players={selectedTeam.team_players}
-          onEdit={handleEditPlayer}
-          onDelete={handleDeletePlayer}
-          showActions={true}
-        />
+        <>
+          <PlayersTable
+            players={selectedTeam.team_players}
+            onEdit={handleEditPlayer}
+            onDelete={handleDeletePlayer}
+            showActions={true}
+          />
+
+          {/* Botón añadir jugador */}
+          <div className="flex justify-center max-w-4xl mx-auto mt-6">
+            <button
+              onClick={() => setIsAddPlayerOpen(true)}
+              className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow"
+            >
+              + Añadir jugador
+            </button>
+          </div>
+        </>
       )}
 
       {isPlayerEditOpen && playerToEdit && (
@@ -243,6 +254,65 @@ export default function Players() {
           player={playerToEdit}
           onClose={handleClosePlayerEdit}
           onSave={handleSavePlayer}
+        />
+      )}
+
+      {isAddPlayerOpen && (
+        <PlayerFormModal
+          isOpen={isAddPlayerOpen}
+          onClose={() => setIsAddPlayerOpen(false)}
+          onSave={async (newPlayerData) => {
+            try {
+              const { isConfirmed } = await Swal.fire({
+                title: '¿Confirmas añadir este jugador?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, añadir',
+                cancelButtonText: 'Cancelar',
+              });
+
+              if (!isConfirmed) return;
+
+              const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/players`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  ...newPlayerData,
+                  team_id: selectedTeam.id,
+                }),
+              });
+
+              if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.message || 'Error al crear jugador');
+              }
+
+              const data = await res.json();
+
+              setSelectedTeam(prev => ({
+                ...prev,
+                team_players: [...prev.team_players, data.player],
+              }));
+
+              Swal.fire({
+                title: 'Jugador creado',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false,
+              });
+
+              setIsAddPlayerOpen(false);
+            } catch (error) {
+              Swal.fire({
+                title: 'Error',
+                text: error.message,
+                icon: 'error',
+              });
+            }
+          }}
         />
       )}
     </>
