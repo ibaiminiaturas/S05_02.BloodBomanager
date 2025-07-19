@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../utils/AuthContext.jsx';
 import LoadingOverlay from '../components/LoadingOverlay.jsx';
 import PlayersTable from '../components/PlayersTable.jsx';
+import PlayerEditModal from '../components/PlayerEditModal.jsx';
+import usePlayers from '../hooks/usePlayers.jsx';
 
 export default function Players() {
   const { token } = useAuth();
@@ -11,6 +13,16 @@ export default function Players() {
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Aquí pasamos players y setPlayers al hook para que gestione la edición/eliminación
+  const {
+    playerToEdit,
+    isPlayerEditOpen,
+    handleEditPlayer,
+    handleClosePlayerEdit,
+    handleSavePlayer,
+    handleDeletePlayer,
+  } = usePlayers(players, setPlayers);
 
   useEffect(() => {
     if (!token) return;
@@ -101,14 +113,22 @@ export default function Players() {
       {selectedTeamId && !loading && !error && (
         <PlayersTable
           players={players}
-          onEdit={(player) => {
-            console.log('Editar jugador:', player);
-          }}
-          onDelete={(player) => {
-            console.log('Eliminar jugador:', player);
-          }}
+          onEdit={handleEditPlayer}
+          onDelete={handleDeletePlayer}
         />
       )}
+
+      {/* Aquí podrías usar playerToEdit e isPlayerEditOpen para renderizar un modal o formulario de edición */}
+      {
+        isPlayerEditOpen && (
+          <PlayerEditModal
+            isOpen={isPlayerEditOpen}
+            player={playerToEdit}
+            onClose={handleClosePlayerEdit}
+            onSave={handleSavePlayer}
+          />
+        )
+      }
     </>
   );
 }
