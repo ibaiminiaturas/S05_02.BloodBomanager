@@ -225,7 +225,7 @@ const {
             {/* Título */}
             <div className="flex items-center mb-6 space-x-3 ml-4">
                 <FaFootballBall className="text-blue-600 w-10 h-10" />
-                <h2 className="text-3xl font-extrabold text-gray-900">Listado de Equipos</h2>
+                <h2 className="text-3xl font-extrabold text-gray-900">Gestion de Equipos</h2>
             </div>
 
             {/* Contenido */}

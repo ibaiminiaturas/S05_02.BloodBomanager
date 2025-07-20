@@ -5,6 +5,7 @@ import LoadingOverlay from '../components/LoadingOverlay.jsx';
 import PlayersTable from '../components/PlayersTable.jsx';
 import PlayerEditModal from '../components/PlayerEditModal.jsx';
 import PlayerFormModal from '../components/PlayerFormModal';
+import { FaRunning } from 'react-icons/fa';
 
 export default function Players() {
   const { token } = useAuth();
@@ -246,7 +247,12 @@ const handleSavePlayer = async (playerData) => {
 
   return (
     <>
-      <h2 className="text-3xl font-bold mb-4 ml-4">Listado de Equipos</h2>
+            <div className="flex items-center mb-6 space-x-3 ml-4">
+                <FaRunning className="text-blue-600 w-10 h-10" />
+                <h2 className="text-3xl font-extrabold text-gray-900">Gestion de Jugadores</h2>
+            </div>
+        
+    
 
       <div className="max-w-md mb-6 ml-4">
         <select
