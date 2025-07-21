@@ -6,7 +6,7 @@
   @keyframes slide-fade-in {
     0% {
       opacity: 0;
-      transform: translateY(20px) scale(0.97);
+      transform: translateY(40px) scale(0.95);
     }
 
     100% {
@@ -16,29 +16,49 @@
   }
 
   @keyframes fade-in {
-    from {
+    0% {
       opacity: 0
     }
 
-    to {
+    100% {
       opacity: 1
     }
   }
 
+  @keyframes pop {
+    0% {
+      transform: scale(0.8);
+      opacity: 0
+    }
+
+    60% {
+      transform: scale(1.1);
+      opacity: 1
+    }
+
+    100% {
+      transform: scale(1);
+    }
+  }
+
   .animate-slide-fade-in {
-    animation: slide-fade-in 0.4s ease-out both;
+    animation: slide-fade-in 0.5s ease-out both;
   }
 
   .animate-fade-in {
     animation: fade-in 0.6s ease-in both;
   }
 
+  .animate-pop {
+    animation: pop 0.4s ease-out;
+  }
+
   .scrollbar-thin {
     scrollbar-width: thin;
   }
 
-  .scrollbar-thumb-blue-300::-webkit-scrollbar-thumb {
-    background-color: #93c5fd;
+  .scrollbar-thumb-blue-400::-webkit-scrollbar-thumb {
+    background-color: #60a5fa;
     border-radius: 9999px;
   }
 }

@@ -2,47 +2,33 @@
 import React, { useState } from 'react';
 import { useAuth } from '../utils/AuthContext.jsx';
 
-function Modal({ title, content, onClose }) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4 sm:px-0">
-      {/* Fondo Blur */}
-      <div
-        className="absolute inset-0 bg-gradient-to-br from-white/40 to-blue-100/20 backdrop-blur-lg transition-opacity duration-300"
-        onClick={onClose}
-      />
+import FlowModal from '../components/FlowModal';
 
-      {/* MODAL */}
-      <div className="relative z-10 w-full max-w-3xl bg-white/80 border border-blue-200 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 animate-slide-fade-in overflow-hidden backdrop-blur-md">
+<FlowModal
+  title="Gestión de Equipos"
+  content={
+    <div className="space-y-4 animate-fade-in">
+      <h3 className="text-lg font-bold text-blue-700">🎽 Creación</h3>
+      <p>Podés crear equipos desde cero, seleccionando:</p>
+      <ul className="list-disc pl-6 text-sm text-gray-700">
+        <li>Nombre único</li>
+        <li>Roster base</li>
+        <li>Entrenador asignado</li>
+        <li>Oro y valor inicial</li>
+      </ul>
 
-        {/* HEADER */}
-        <div className="flex items-center justify-between border-b border-blue-200 pb-4 mb-6">
-          <div className="flex items-center gap-3">
-            <div className="text-3xl">🧠</div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-blue-800 tracking-tight">
-              {title}
-            </h2>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-blue-400 hover:text-red-500 text-3xl font-bold transition transform hover:scale-110"
-          >
-            &times;
-          </button>
-        </div>
+      <div className="border-t border-blue-200 my-4" />
 
-        {/* CONTENIDO */}
-        <div className="space-y-6 overflow-y-auto max-h-[70vh] pr-2 scroll-smooth scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-transparent">
-          {content}
-        </div>
-
-        {/* FOOTER decorativo opcional */}
-        <div className="mt-8 border-t border-blue-200 pt-4 text-center text-sm text-blue-600 italic animate-fade-in delay-500">
-          ⚡ Dominá el juego. Gestioná como un campeón. ⚡
-        </div>
-      </div>
+      <h3 className="text-lg font-bold text-blue-700">🧰 Edición y gestión</h3>
+      <ul className="list-disc pl-6 text-sm">
+        <li>Editar nombre / valor</li>
+        <li>Eliminar equipos</li>
+        <li>Ver alineación actual</li>
+      </ul>
     </div>
-  );
-}
+  }
+  onClose={() => setShowModal(false)}
+/>
 
 
 export default function Dashboard() {
@@ -247,7 +233,7 @@ export default function Dashboard() {
       </div>
 
       {activeModal && (
-        <Modal
+        <FlowModal
           title={activeModal}
           content={manualContent[activeModal]}
           onClose={() => setActiveModal(null)}
