@@ -5,32 +5,39 @@ import { useAuth } from '../utils/AuthContext.jsx';
 function Modal({ title, content, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4 sm:px-0">
-      {/* Fondo translúcido con desenfoque */}
+      {/* Fondo Blur */}
       <div
-        className="absolute inset-0 bg-white/30 backdrop-blur-md"
+        className="absolute inset-0 bg-gradient-to-br from-white/40 to-blue-100/20 backdrop-blur-lg transition-opacity duration-300"
         onClick={onClose}
       />
 
-      {/* Modal animado */}
-      <div className="relative z-10 w-full max-w-2xl bg-white/80 backdrop-blur-lg border border-blue-200 shadow-2xl rounded-2xl p-6 animate-slide-fade-in overflow-hidden">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-4 border-b pb-3">
-          <h2 className="text-2xl font-bold text-blue-800 flex items-center gap-2">
-            <span className="inline-block bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-medium shadow-sm">
+      {/* MODAL */}
+      <div className="relative z-10 w-full max-w-3xl bg-white/80 border border-blue-200 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 animate-slide-fade-in overflow-hidden backdrop-blur-md">
+
+        {/* HEADER */}
+        <div className="flex items-center justify-between border-b border-blue-200 pb-4 mb-6">
+          <div className="flex items-center gap-3">
+            <div className="text-3xl">🧠</div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-blue-800 tracking-tight">
               {title}
-            </span>
-          </h2>
+            </h2>
+          </div>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-red-500 text-2xl font-bold transition"
+            className="text-blue-400 hover:text-red-500 text-3xl font-bold transition transform hover:scale-110"
           >
             &times;
           </button>
         </div>
 
-        {/* Contenido */}
-        <div className="text-gray-800 text-[15px] space-y-6 animate-fade-in delay-100">
+        {/* CONTENIDO */}
+        <div className="space-y-6 overflow-y-auto max-h-[70vh] pr-2 scroll-smooth scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-transparent">
           {content}
+        </div>
+
+        {/* FOOTER decorativo opcional */}
+        <div className="mt-8 border-t border-blue-200 pt-4 text-center text-sm text-blue-600 italic animate-fade-in delay-500">
+          ⚡ Dominá el juego. Gestioná como un campeón. ⚡
         </div>
       </div>
     </div>
