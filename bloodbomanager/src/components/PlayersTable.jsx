@@ -4,7 +4,7 @@ import { FaTrash } from 'react-icons/fa';
 import { FaPlus } from 'react-icons/fa6'; // icono para añadir
 
 export default function PlayersTable({ players, onEdit, onDelete, onAdd, showActions = false }) {
-  
+
   if (!players || players.length === 0) {
     return (
       <div className="bg-blue-100 text-blue-700 p-6 rounded-md shadow-md text-center max-w-4xl mx-auto mt-10">
@@ -22,8 +22,8 @@ export default function PlayersTable({ players, onEdit, onDelete, onAdd, showAct
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full border border-gray-300 rounded-md shadow-sm">
+    <div className="overflow-x-auto ml-4 mr-4">
+      <table className="w-full min-w-full border border-gray-300 rounded-md overflow-hidden shadow-md">
         <thead>
           <tr className="bg-blue-600 text-white">
             <th className="py-2 px-4 text-left w-[220px]">Nombre</th>
@@ -87,7 +87,7 @@ export default function PlayersTable({ players, onEdit, onDelete, onAdd, showAct
         </tbody>
       </table>
 
-     
+
     </div>
   );
 }

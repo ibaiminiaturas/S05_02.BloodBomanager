@@ -25,26 +25,32 @@ export default function Teams() {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showTeamModal, setShowTeamModal] = useState(false);
 
-const {
-  playerToEdit,
-  isPlayerEditOpen,
-  handleEditPlayer,
-  handleClosePlayerEdit,
-  handleSavePlayer,
-  handleDeletePlayer,
-} = usePlayers(selectedTeam, setSelectedTeam);
+    const {
+        playerToEdit,
+        isPlayerEditOpen,
+        handleEditPlayer,
+        handleClosePlayerEdit,
+        handleSavePlayer,
+        handleDeletePlayer,
+    } = usePlayers(selectedTeam, setSelectedTeam);
 
 
     const fetchTeams = async (page = 1) => {
         setLoading(true);
+
         try {
             const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/teams?page=${page}`, {
-                headers: { Authorization: `Bearer ${token}` },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
             });
+
+            const data = await res.json();
 
             if (!res.ok) throw new Error('Error al obtener los equipos');
 
-            const data = await res.json();
 
             setTeams(data.data.data);
             setPagination(data.data);
@@ -314,7 +320,7 @@ const {
                 />
             )}
 
-             {showTeamModal && selectedTeam && (
+            {showTeamModal && selectedTeam && (
                 <TeamViewModal
                     isOpen={showTeamModal}
                     onClose={() => setShowTeamModal(false)}
