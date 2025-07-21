@@ -4,33 +4,39 @@ import { useAuth } from '../utils/AuthContext.jsx';
 
 function Modal({ title, content, onClose }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Fondo transparente con desenfoque */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4 sm:px-0">
+      {/* Fondo translúcido con desenfoque */}
       <div
-        className="absolute inset-0 backdrop-blur-sm bg-white/30 transition-opacity duration-300"
+        className="absolute inset-0 bg-white/30 backdrop-blur-md"
         onClick={onClose}
       />
 
-      {/* Modal central animado */}
-      <div
-        className="relative z-10 bg-white rounded-xl shadow-2xl p-6 max-w-xl w-full transform transition-all duration-300 animate-fade-in-up"
-      >
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-blue-800">{title}</h2>
+      {/* Modal animado */}
+      <div className="relative z-10 w-full max-w-2xl bg-white/80 backdrop-blur-lg border border-blue-200 shadow-2xl rounded-2xl p-6 animate-slide-fade-in overflow-hidden">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-4 border-b pb-3">
+          <h2 className="text-2xl font-bold text-blue-800 flex items-center gap-2">
+            <span className="inline-block bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-medium shadow-sm">
+              {title}
+            </span>
+          </h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-red-500 text-xl font-bold"
+            className="text-gray-500 hover:text-red-500 text-2xl font-bold transition"
           >
             &times;
           </button>
         </div>
-        <div className="text-gray-700 whitespace-pre-line leading-relaxed text-sm">
+
+        {/* Contenido */}
+        <div className="text-gray-800 text-[15px] space-y-6 animate-fade-in delay-100">
           {content}
         </div>
       </div>
     </div>
   );
 }
+
 
 export default function Dashboard() {
   const { user } = useAuth();
