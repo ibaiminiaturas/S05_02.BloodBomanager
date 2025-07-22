@@ -18,6 +18,7 @@ const Navbar = () => {
     { to: '/players', label: 'Jugadores', roles: ['admin', 'coach'] },
     { to: '/skills', label: 'Habilidades', roles: ['admin', 'coach'] },
     { to: '/rosters', label: 'Rosters', roles: ['admin', 'coach'] },
+    { to: '/simulate', label: 'Simular Partido', roles: ['admin', 'coach'] },
 
   ];
 

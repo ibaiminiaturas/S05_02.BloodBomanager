@@ -12,6 +12,8 @@ import Rosters from './pages/Rosters.jsx'; // ← importa el componente
 import Teams from './pages/Teams';
 import Players from './pages/Players';
 
+import SimulateMatch from './pages/SimulateMatch';
+
 import { useAuth } from './utils/AuthContext';
 
 import Register from './pages/Register';  // importa el componente Register
@@ -46,6 +48,7 @@ export default function App() {
         <Route path="/players" element={<Players />} />
         <Route path="/skills" element={<Skills />} />
         <Route path="/rosters" element={<Rosters />} />
+        <Route path="/simulate" element={<SimulateMatch />} />
         {user.roles.some(r => r.name === 'admin') && (
           <Route path="/coaches" element={<Coaches />} />
         )}
