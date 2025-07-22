@@ -109,32 +109,46 @@ export default function SimulateMatch() {
                 </div>
 
                 {loading && <LoadingOverlay message="Simulando batalla en el campo..." fullScreen={false} />}
-
                 {result && (
                     <motion.div
                         initial={{ opacity: 0, y: 40 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
-                        className="bg-white shadow-2xl rounded-xl p-8 max-w-5xl mx-auto border border-blue-200"
+                        className="bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-600 shadow-glow rounded-xl p-8 max-w-5xl mx-auto border border-cyan-400 relative overflow-hidden"
                     >
-                        <h3 className="text-2xl font-bold text-center mb-6 text-blue-700 uppercase tracking-wide">
+                        {/* Brillito animado */}
+                        <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+                            <div className="animate-shimmer absolute top-0 left-[-75%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
+                        </div>
+
+                        <h3 className="text-3xl font-extrabold text-center mb-8 text-cyan-300 uppercase tracking-wider drop-shadow-lg">
                             Resultado del Partido
                         </h3>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                             {[result.team_1, result.team_2].map((team, index) => (
-                                <div key={index} className="bg-blue-100 p-6 rounded-lg border-l-8 border-blue-400 relative">
-                                    <h4 className="text-xl font-bold text-blue-900 mb-2">{team.name}</h4>
-                                    <p className="text-gray-700 font-semibold text-lg mb-3">
-                                        🏈 Touchdowns: <span className="text-blue-800">{team.touchdowns}</span>
+                                <div
+                                    key={index}
+                                    className="bg-gradient-to-tr from-cyan-700 to-cyan-900 rounded-xl p-8 border-l-8 border-cyan-400 shadow-neon relative text-white"
+                                >
+                                    <h4 className="text-2xl font-extrabold mb-3 drop-shadow-md">{team.name}</h4>
+                                    <p className="text-cyan-300 font-semibold text-xl mb-4 tracking-wide flex items-center gap-2">
+                                        🏈 Touchdowns: <span className="text-3xl font-extrabold">{team.touchdowns}</span>
                                     </p>
-                                    <ul className="text-sm text-gray-800 space-y-1">
+                                    <ul className="text-cyan-200 space-y-2 font-semibold text-lg max-h-48 overflow-auto pr-2">
                                         {team.scorers.map((player, i) => (
-                                            <li key={i}>
-                                                <span className="font-medium">{player.player_name}</span>: {player.touchdowns} TD
+                                            <li
+                                                key={i}
+                                                className="hover:text-cyan-300 transition-colors duration-300 cursor-default"
+                                            >
+                                                <span className="font-extrabold">{player.player_name}</span>: {player.touchdowns} TD
                                             </li>
                                         ))}
                                     </ul>
+
+                                    {/* Efecto glow pulsante */}
+                                    <span className="absolute -top-3 -left-3 w-12 h-12 rounded-full bg-cyan-400 opacity-50 blur-xl animate-pulse"></span>
+                                    <span className="absolute -bottom-3 -right-3 w-16 h-16 rounded-full bg-cyan-300 opacity-40 blur-3xl animate-pulse animation-delay-2000"></span>
                                 </div>
                             ))}
                         </div>
@@ -143,15 +157,17 @@ export default function SimulateMatch() {
                             initial={{ scale: 0.5, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             transition={{ delay: 0.4, type: 'spring', stiffness: 120 }}
-                            className="mt-10 text-center"
+                            className="mt-12 text-center"
                         >
-                            <div className="inline-flex items-center bg-yellow-200 text-yellow-900 px-5 py-3 rounded-full shadow-lg text-xl font-extrabold tracking-wide animate-pulse gap-3">
-                                <FaTrophy className="text-yellow-600 animate-bounce" />
+                            <div className="inline-flex items-center bg-cyan-300 bg-opacity-30 text-cyan-900 px-8 py-4 rounded-full shadow-neon text-2xl font-extrabold tracking-wide animate-pulse gap-4 select-none">
+                                <FaTrophy className="text-cyan-400 animate-bounce drop-shadow-lg" />
                                 ¡Ganador: {result.winner}!
                             </div>
                         </motion.div>
                     </motion.div>
                 )}
+
+
             </div>
         </>
     );

@@ -78,3 +78,56 @@
         border-radius: 9999px;
     }
 }
+
+/* Glow sombra neón azul-cian */
+.shadow-neon {
+    box-shadow:
+        0 0 8px #22d3ee,
+        0 0 20px #06b6d4,
+        0 0 30px #22d3ee,
+        0 0 40px #67e8f9;
+}
+
+/* Glow general para el contenedor */
+.shadow-glow {
+    box-shadow:
+        0 0 20px 4px rgba(14, 116, 144, 0.7),
+        0 0 40px 8px rgba(38, 194, 228, 0.5);
+}
+
+/* Animación shimmer - brillo que se mueve */
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(200%);
+    }
+}
+
+.animate-shimmer {
+    animation: shimmer 2.5s infinite;
+}
+
+/* Animación pulse lenta y suave para glow */
+@keyframes pulse-slow {
+
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+.animate-pulse {
+    animation: pulse-slow 3s ease-in-out infinite;
+}
+
+/* Delay para animación */
+.animation-delay-2000 {
+    animation-delay: 2s;
+}
