@@ -137,6 +137,26 @@ export default function Dashboard() {
         </ul>
       </div>
     ),
+
+    Simular: ( // NUEVO
+    <div className="space-y-4">
+      <h3 className="text-lg font-bold text-red-700">🧪 Solo para Administradores</h3>
+      <p>Desde aquí podés simular un partido entre dos equipos de cualquier entrenador.</p>
+
+      <h3 className="text-lg font-bold text-blue-700">📋 Funcionalidades</h3>
+      <ul className="list-disc pl-6 space-y-1 text-sm">
+        <li>Seleccionar dos equipos disponibles de toda la base de datos.</li>
+        <li>Simular el resultado del partido: touchdowns, MVP, lesiones, etc.</li>
+        <li>Registrar automáticamente los eventos del partido.</li>
+        <li>Actualizar estadísticas de jugadores y equipos según el resultado.</li>
+      </ul>
+
+      <p className="text-sm text-gray-600 italic">
+        Ideal para pruebas o torneos rápidos sin necesidad de ingresar resultados manualmente.
+      </p>
+    </div>
+  ),
+
   };
   const cards = [
 
@@ -175,6 +195,14 @@ export default function Dashboard() {
         <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
       ),
     },
+
+    {
+    title: 'Simular',
+    description: 'Elige dos equipos y simula un partido automáticamente.',
+    icon: (
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2" />
+    ),
+  }, 
   ];
 
 
@@ -201,7 +229,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {cards
             .filter(card => {
-              if (card.title === 'Entrenadores') {
+              if (card.title === 'Entrenadores' || card.title === 'Simular') {
                 return user?.roles?.some(role => role.name === 'admin');
               }
               return true;
