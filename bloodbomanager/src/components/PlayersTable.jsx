@@ -9,14 +9,7 @@ export default function PlayersTable({ players, onEdit, onDelete, onAdd, showAct
     return (
       <div className="bg-blue-100 text-blue-700 p-6 rounded-md shadow-md text-center max-w-4xl mx-auto mt-10">
         <p>No hay jugadores registrados todavía.</p>
-        {showActions && (
-          <button
-            onClick={onAdd}
-            className="mt-4 inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow transition"
-          >
-            <FaPlus /> Añadir jugador
-          </button>
-        )}
+
       </div>
     );
   }
