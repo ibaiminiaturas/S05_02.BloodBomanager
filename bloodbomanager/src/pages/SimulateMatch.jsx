@@ -11,6 +11,7 @@ export default function SimulateMatch() {
     const [team1Id, setTeam1Id] = useState('');
     const [team2Id, setTeam2Id] = useState('');
     const [loading, setLoading] = useState(false);
+    const [isSimulating, setIsSimulating] = useState(false);
     const [result, setResult] = useState(null);
     const [error, setError] = useState('');
 
@@ -37,7 +38,7 @@ export default function SimulateMatch() {
     const handleSimulate = async () => {
         if (!team1Id || !team2Id) return;
 
-        setLoading(true);
+        setIsSimulating(true);
         setResult(null);
         try {
             const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/matches/simulate`, {
@@ -62,7 +63,7 @@ export default function SimulateMatch() {
             setError(err.message);
             Swal.fire('Error', err.message, 'error');
         } finally {
-            setLoading(false);
+            setIsSimulating(false);
         }
     };
 
@@ -108,7 +109,8 @@ export default function SimulateMatch() {
                     </button>
                 </div>
 
-                {loading && <LoadingOverlay message="Simulando batalla en el campo..." fullScreen={false} />}
+                {isSimulating && <LoadingOverlay message="Simulando batalla en el campo..." fullScreen={false} />}
+
                 {result && (
                     <motion.div
                         initial={{ opacity: 0, y: 40 }}
@@ -166,8 +168,6 @@ export default function SimulateMatch() {
                         </motion.div>
                     </motion.div>
                 )}
-
-
             </div>
         </>
     );

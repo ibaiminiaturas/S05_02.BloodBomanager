@@ -55,7 +55,10 @@ const Navbar = () => {
 
 
 
-      <div className="flex-shrink-0">
+      <div className="flex-shrink-0 flex items-center space-x-3">
+        <span className="text-gray-700 font-medium">
+          {user?.name}
+        </span>
         <button
           onClick={logout}
           className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
