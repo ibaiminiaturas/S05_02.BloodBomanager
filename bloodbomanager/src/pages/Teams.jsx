@@ -13,7 +13,7 @@ import usePlayers from '../hooks/usePlayers.jsx';
 
 
 export default function Teams() {
-    const { token } = useAuth();
+    const { token, user } = useAuth();
 
     const [teams, setTeams] = useState([]);
     const [pagination, setPagination] = useState(null);
@@ -249,15 +249,17 @@ export default function Teams() {
                 {pagination && (
                     <Pagination pagination={pagination} onPageChange={handlePageChange} />
                 )}
-
-                <div className="mt-4 flex justify-center">
-                    <button
-                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow"
-                        onClick={() => setShowCreateModal(true)}
-                    >
-                        Crear Equipo
-                    </button>
-                </div>
+                {console.log(user?.roles?.some)}
+                {user?.roles?.some(role => role.name === 'admin') && (
+                    <div className="mt-4 flex justify-center">
+                        <button
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow"
+                            onClick={() => setShowCreateModal(true)}
+                        >
+                            Crear Equipo
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* Modal de edición */}
